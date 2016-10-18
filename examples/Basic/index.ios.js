@@ -15,7 +15,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import SortableList from './src/SortableList';
+import SortableList from 'react-native-sortable-list';
 
 const window = Dimensions.get('window');
 
@@ -63,7 +63,7 @@ const data = {
   },
 };
 
-class Example extends Component {
+class Basic extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -196,4 +196,4 @@ const styles = StyleSheet.create({
 
 });
 
-AppRegistry.registerComponent('Example', () => Example);
+AppRegistry.registerComponent('Basic', () => Basic);
