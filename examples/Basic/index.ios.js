@@ -91,12 +91,10 @@ class Row extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.active !== nextProps.active) {
-      if (this.props.active !== nextProps.active) {
-        if (nextProps.active) {
-          this.startActivationAnimation();
-        } else {
-          this.startDeactivationAnimation();
-        }
+      if (nextProps.active) {
+        this.startActivationAnimation();
+      } else {
+        this.startDeactivationAnimation();
       }
     }
   }
