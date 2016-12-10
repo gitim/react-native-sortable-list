@@ -119,11 +119,11 @@ export default class SortableList extends Component {
 
     // Scroll if the row is not visible.
     if (
-      keyY < this.state.contentOffset.y ||
-      keyY > this.state.contentOffset.y + containerLayout.height
+      keyY < this._contentOffset.y ||
+      keyY > this._contentOffset.y + containerLayout.height
     ) {
       this._contentOffset = {
-        x: this.state.contentOffset.x,
+        x: this._contentOffset.x,
         y: keyY,
       };
       this._scroll(animated);
@@ -427,7 +427,7 @@ export default class SortableList extends Component {
   };
 
   _onScroll = ({nativeEvent: {contentOffset}}) => {
-    this.setState({contentOffset});
+      this._contentOffset = contentOffset;
   };
 
   _onRefContainer = (animatedComponent) => {
