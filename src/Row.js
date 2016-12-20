@@ -78,9 +78,7 @@ export default class Row extends Component {
 
     },
 
-    onPanResponderTerminationRequest: () => {
-      this._cancelLongPress();
-    },
+    onPanResponderTerminationRequest: () => !this.state.active,
 
     onPanResponderTerminate: () => {
       this._cancelLongPress();
