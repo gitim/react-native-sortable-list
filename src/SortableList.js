@@ -333,23 +333,39 @@ export default class SortableList extends Component {
       this._startAutoScroll({
         direction: -1,
         shouldScroll: () => this._contentOffset.y > 0,
+        getScrollStep: (stepIndex) => {
+          const nextStep = this._getScrollStep(stepIndex);
+
+          return this._contentOffset.y - nextStep < 0
+            ? this._contentOffset.y
+            : nextStep;
+        },
       });
     } else if (inAutoScrollDownArea) {
       this._startAutoScroll({
         direction: 1,
         shouldScroll: () => {
-          const {
-            contentHeight,
-            containerLayout,
-          } = this.state;
+          const {contentHeight, containerLayout} = this.state;
 
           return this._contentOffset.y < contentHeight - containerLayout.height;
+        },
+        getScrollStep: (stepIndex) => {
+          const nextStep = this._getScrollStep(stepIndex);
+          const {contentHeight, containerLayout} = this.state;
+
+          return this._contentOffset.y + nextStep > contentHeight - containerLayout.height
+            ? contentHeight - containerLayout.height - this._contentOffset.y
+            : nextStep;
         },
       });
     }
   }
 
-  _startAutoScroll({direction, shouldScroll}) {
+  _getScrollStep(stepIndex) {
+    return stepIndex > 3 ? 60 : 30;
+  }
+
+  _startAutoScroll({direction, shouldScroll, getScrollStep}) {
     if (!shouldScroll()) {
       return;
     }
@@ -358,15 +374,8 @@ export default class SortableList extends Component {
     let counter = 0;
 
     this._autoScrollInterval = setInterval(() => {
-      counter++;
       if (shouldScroll()) {
-        let dy;
-        if (counter > 3) {
-          dy = 60;
-        } else {
-          dy = 30;
-        }
-        dy = direction * dy;
+        const dy = direction * getScrollStep(counter++);
         this.scrollBy({dy});
         this._rows[activeRowKey].moveBy({dy});
       } else {
