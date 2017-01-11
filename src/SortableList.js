@@ -6,6 +6,12 @@ import Row from './Row';
 const AUTOSCROLL_AREA_HEIGTH = 60;
 const AUTOSCROLL_INTERVAL = 100;
 
+function uniqueRowKey(key) {
+  return `${key}${uniqueRowKey.id}`
+}
+
+uniqueRowKey.id = 0
+
 export default class SortableList extends Component {
   static propTypes = {
     data: PropTypes.object.isRequired,
@@ -42,6 +48,7 @@ export default class SortableList extends Component {
   state = {
     order: this.props.order || Object.keys(this.props.data),
     rowsLayouts: null,
+    containerLayout: null,
     data: this.props.data,
     activeRowKey: null,
     activeRowIndex: null,
@@ -54,37 +61,37 @@ export default class SortableList extends Component {
   };
 
   componentDidMount() {
-    Promise.all([...this._rowsLayouts])
-      .then((rowsLayouts) => {
-        // Can get correct container’s layout only after rows’s layouts.
-        this._container.measure((x, y, width, height, pageX, pageY) => {
-          const rowsLayoutsByKey = {};
-          let contentHeight = 0;
-
-          rowsLayouts.forEach(({rowKey, layout}) => {
-            rowsLayoutsByKey[rowKey] = layout;
-            contentHeight += layout.height;
-          });
-
-          this.setState({
-            containerLayout: {x, y, width, height, pageX, pageY},
-            rowsLayouts: rowsLayoutsByKey,
-            contentHeight,
-          }, () => {
-            Animated.spring(this.state.style.opacity, {
-              toValue: 1,
-            }).start(() => (this._areRowsAnimated = true));
-          });
-        });
-      });
+    this._onLayotRows();
   }
 
   componentWillReceiveProps(nextProps) {
-    const {order} = this.props;
-    const {order: nextOrder} = nextProps;
+    const {data, order} = this.state;
+    const {data: nextData, order: nextOrder} = nextProps;
 
-    if (order && nextOrder && !shallowEqual(order, nextOrder)) {
+    if (data && nextData && !shallowEqual(data, nextData)) {
+      this._animateRowsDisappearance(() => {
+        uniqueRowKey.id++;
+        this._areRowsAnimated = false;
+        this._rowsLayouts = [];
+        this.setState({
+          data: nextData,
+          containerLayout: null,
+          rowsLayouts: null,
+          order: nextOrder || Object.keys(nextData)
+        });
+      });
+
+    } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
       this.setState({order: nextOrder});
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const {data} = this.state;
+    const {data: prevData} = prevState;
+
+    if (data && prevData && !shallowEqual(data, prevData)) {
+      this._onLayotRows();
     }
   }
 
@@ -195,7 +202,7 @@ export default class SortableList extends Component {
 
       return (
         <Row
-          key={key}
+          key={uniqueRowKey(key)}
           ref={this._onRefRow.bind(this, key)}
           animated={this._areRowsAnimated && !active}
           disabled={!sortingEnabled}
@@ -215,6 +222,42 @@ export default class SortableList extends Component {
         </Row>
       );
     });
+  }
+
+  _onLayotRows() {
+    Promise.all([...this._rowsLayouts])
+      .then((rowsLayouts) => {
+        // Can get correct container’s layout only after rows’s layouts.
+        this._container.measure((x, y, width, height, pageX, pageY) => {
+          const rowsLayoutsByKey = {};
+          let contentHeight = 0;
+
+          rowsLayouts.forEach(({rowKey, layout}) => {
+            rowsLayoutsByKey[rowKey] = layout;
+            contentHeight += layout.height;
+          });
+
+          this.setState({
+            containerLayout: {x, y, width, height, pageX, pageY},
+            rowsLayouts: rowsLayoutsByKey,
+            contentHeight,
+          }, () => {
+            this._animateRowsAppearance(() => (this._areRowsAnimated = true));
+          });
+        });
+      });
+  }
+
+  _animateRowsAppearance(onAnimationEnd) {
+    Animated.timing(this.state.style.opacity, {
+      toValue: 1,
+    }).start(onAnimationEnd);
+  }
+
+  _animateRowsDisappearance(onAnimationEnd) {
+    Animated.timing(this.state.style.opacity, {
+      toValue: 0,
+    }).start(onAnimationEnd);
   }
 
   _scroll(animated) {
