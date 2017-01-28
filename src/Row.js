@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Animated, PanResponder, LayoutAnimation, StyleSheet} from 'react-native';
+import {Animated, PanResponder, StyleSheet} from 'react-native';
 import {shallowEqual} from './utils';
 
 const ACTIVATION_DELAY = 200;
@@ -30,9 +30,15 @@ export default class Row extends Component {
     location: {x: 0, y: 0},
   };
 
-  state = {
-    location: this.props.location,
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+    this._animatedLocation = new Animated.ValueXY(props.location);
+    this._location = props.location;
+
+    this._animatedLocation.addListener(this._onChangeLocation);
+  }
 
   _panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => !this.props.disabled,
@@ -47,7 +53,7 @@ export default class Row extends Component {
 
         this.setState({active: true}, () => {
           if (this.props.onActivate) {
-            this.props.onActivate(e, gestureState, this.state.location);
+            this.props.onActivate(e, gestureState, this._location);
           }
         });
       }, ACTIVATION_DELAY);
@@ -86,8 +92,9 @@ export default class Row extends Component {
   });
 
   componentWillReceiveProps(nextProps) {
-    if (!this.state.active && !shallowEqual(this.state.location, nextProps.location)) {
-      this.setState({location: nextProps.location});
+    if (!this.state.active && !shallowEqual(this._location, nextProps.location)) {
+      const animated = !this.state.active && nextProps.animated;
+      this._relocate(nextProps.location, animated);
     }
   }
 
@@ -100,26 +107,12 @@ export default class Row extends Component {
            !shallowEqual(this.state.location, nextState.location);
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if (
-        !this.state.active &&
-        nextProps.animated &&
-        !shallowEqual(this.state.location, nextState.location)
-      ) {
-      LayoutAnimation.easeInEaseOut();
-    }
-  }
-
   moveBy({dx = 0, dy = 0, animated = false}) {
-    if (animated) {
-      LayoutAnimation.easeInEaseOut();
-    }
-
     this._nextLocation = {
-      x: this.state.location.x + dx,
-      y: this.state.location.y + dy,
+      x: this._location.x + dx,
+      y: this._location.y + dy,
     };
-    this.setState({location: this._nextLocation});
+    this._relocate(this._nextLocation, animated);
   }
 
   render() {
@@ -128,7 +121,7 @@ export default class Row extends Component {
     return (
       <Animated.View
         {...this._panResponder.panHandlers}
-        style={[style, styles.container, this._getLayout()]}
+        style={[style, styles.container, this._animatedLocation.getLayout()]}
         onLayout={this.props.onLayout}>
         {children}
       </Animated.View>
@@ -139,11 +132,16 @@ export default class Row extends Component {
     clearTimeout(this._longPressTimer);
   }
 
-  _getLayout() {
-    return {
-      left: this.state.location.x,
-      top: this.state.location.y,
-    };
+  _relocate(nextLocation, animated) {
+    this._location = nextLocation;
+
+    if (animated) {
+      Animated.timing(this._animatedLocation, {
+        toValue: nextLocation,
+      }).start();
+    } else {
+      this._animatedLocation.setValue(nextLocation);
+    }
   }
 
   _mapGestureToMove(prevGestureState, gestureState) {
@@ -151,6 +149,10 @@ export default class Row extends Component {
       dy: gestureState.dy - prevGestureState.dy,
     };
   }
+
+  _onChangeLocation = (value) => {
+    this._location = value;
+  };
 }
 
 const styles = StyleSheet.create({
