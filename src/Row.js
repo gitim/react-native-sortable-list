@@ -33,7 +33,6 @@ export default class Row extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
     this._animatedLocation = new Animated.ValueXY(props.location);
     this._location = props.location;
 
@@ -51,16 +50,12 @@ export default class Row extends Component {
         this._recentlyReleased = false;
         this._prevGestureState = {...gestureState};
 
-        this.setState({active: true}, () => {
-          if (this.props.onActivate) {
-            this.props.onActivate(e, gestureState, this._location);
-          }
-        });
+        this._toggleActive(e, gestureState);
       }, ACTIVATION_DELAY);
     },
 
     onPanResponderMove: (e, gestureState) => {
-      if (!this.state.active) {
+      if (!this._active) {
         return;
       }
 
@@ -73,18 +68,22 @@ export default class Row extends Component {
       }
     },
 
-    onPanResponderRelease: () => {
+    onPanResponderRelease: (e, gestureState) => {
       this._cancelLongPress();
 
-      this.setState({active: false}, () => {
-        if (this.props.onRelease) {
-          this.props.onRelease();
-        }
-      });
-
+      this._toggleActive(e, gestureState);
     },
 
-    onPanResponderTerminationRequest: () => !this.state.active,
+    onPanResponderTerminationRequest: () => {
+      if (this._active) {
+        // If a view is active do not release responder.
+        return false;
+      }
+
+      this._cancelLongPress();
+
+      return true;
+    },
 
     onPanResponderTerminate: () => {
       this._cancelLongPress();
@@ -92,8 +91,8 @@ export default class Row extends Component {
   });
 
   componentWillReceiveProps(nextProps) {
-    if (!this.state.active && !shallowEqual(this._location, nextProps.location)) {
-      const animated = !this.state.active && nextProps.animated;
+    if (!this._active && !shallowEqual(this._location, nextProps.location)) {
+      const animated = !this._active && nextProps.animated;
       this._relocate(nextProps.location, animated);
     }
   }
@@ -101,10 +100,7 @@ export default class Row extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     return this.props.disabled !== nextProps.disabled ||
            this.props.children !== nextProps.children ||
-           !shallowEqual(this.props.location, nextProps.location) ||
-           !shallowEqual(this.props.style, nextProps.style) ||
-           this.state.active !== nextState.active ||
-           !shallowEqual(this.state.location, nextState.location);
+           !shallowEqual(this.props.style, nextProps.style);
   }
 
   moveBy({dx = 0, dy = 0, animated = false}) {
@@ -141,6 +137,16 @@ export default class Row extends Component {
       }).start();
     } else {
       this._animatedLocation.setValue(nextLocation);
+    }
+  }
+
+  _toggleActive(e, gestureState) {
+    const callback = this._active ? this.props.onRelease : this.props.onActivate;
+
+    this._active = !this._active;
+
+    if (callback) {
+      callback(e, gestureState, this._location);
     }
   }
 
