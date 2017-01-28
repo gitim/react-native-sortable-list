@@ -1,10 +1,11 @@
 import React, {Component, PropTypes} from 'react';
-import {Animated, ScrollView, View, StyleSheet} from 'react-native';
+import {Animated, ScrollView, View, StyleSheet, Platform} from 'react-native';
 import {shallowEqual, swapArrayElements} from './utils';
 import Row from './Row';
 
 const AUTOSCROLL_AREA_HEIGTH = 60;
 const AUTOSCROLL_INTERVAL = 100;
+const ZINDEX = Platform.OS === 'ios' ? 'zIndex' : 'elevation';
 
 function uniqueRowKey(key) {
   return `${key}${uniqueRowKey.id}`
@@ -168,36 +169,23 @@ export default class SortableList extends Component {
     let nextY = 0;
 
     return order.map((key, index) => {
-      const item = data[key];
-      const style = {};
+      const style = {[ZINDEX]: 0};
+      const location = {x: 0, y: 0};
       let resolveLayout;
-      let location;
-
-      if (!rowsLayouts) {
-        this._rowsLayouts.push(new Promise((resolve) => (resolveLayout = resolve)));
-      }
 
       if (rowsLayouts) {
-        const layout = rowsLayouts[key];
-
-        Object.assign(style, {width: rowWidth, zIndex: 0});
-        location = {
-          x: 0,
-          y: nextY,
-        };
-        nextY += layout.height;
+        style.width = rowWidth;
+        location.y = nextY;
+        nextY += rowsLayouts[key].height;
       } else {
-        location = {
-          x: 0,
-          y: 0,
-        };
+        this._rowsLayouts.push(new Promise((resolve) => (resolveLayout = resolve)));
       }
 
       const active = activeRowKey === key;
       const released = releasedRowKey === key;
 
       if (active || released) {
-        Object.assign(style, {zIndex: 100});
+        style[ZINDEX] = 100;
       }
 
       return (
@@ -214,7 +202,7 @@ export default class SortableList extends Component {
           onMove={this._onMoveRow}>
           {renderRow({
             key,
-            data: item,
+            data: data[key],
             disabled: !sortingEnabled,
             active,
             index,
