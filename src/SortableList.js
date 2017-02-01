@@ -62,7 +62,7 @@ export default class SortableList extends Component {
   };
 
   componentDidMount() {
-    this._onLayotRows();
+    this._onLayoutRows();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -92,7 +92,7 @@ export default class SortableList extends Component {
     const {data: prevData} = prevState;
 
     if (data && prevData && !shallowEqual(data, prevData)) {
-      this._onLayotRows();
+      this._onLayoutRows();
     }
   }
 
@@ -212,7 +212,7 @@ export default class SortableList extends Component {
     });
   }
 
-  _onLayotRows() {
+  _onLayoutRows() {
     Promise.all([...this._rowsLayouts])
       .then((rowsLayouts) => {
         // Can get correct container’s layout only after rows’s layouts.
