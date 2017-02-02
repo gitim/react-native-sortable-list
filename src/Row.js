@@ -40,22 +40,35 @@ export default class Row extends Component {
   }
 
   _panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => !this.props.disabled,
-    onMoveShouldSetPanResponder: () => !this.props.disabled,
+    onStartShouldSetPanResponder: () => !this._isDisabled(),
+    onMoveShouldSetPanResponder: () => !this._isDisabled(),
 
     onPanResponderGrant: (e, gestureState) => {
       e.persist();
+      this._wasLongPress = false;
 
       this._longPressTimer = setTimeout(() => {
-        this._recentlyReleased = false;
-        this._prevGestureState = {...gestureState};
-
+        this._wasLongPress = true;
+        this._target = e.nativeEvent.target;
+        this._prevGestureState = {
+          ...gestureState,
+          moveX: gestureState.x0,
+          moveY: gestureState.y0,
+        };
         this._toggleActive(e, gestureState);
       }, ACTIVATION_DELAY);
     },
 
     onPanResponderMove: (e, gestureState) => {
-      if (!this._active) {
+      if (
+        !this._active ||
+        gestureState.numberActiveTouches > 1 ||
+        e.nativeEvent.target !== this._target
+      ) {
+        if (!this._isTouchInsideElement(e)) {
+          this._cancelLongPress();
+        }
+
         return;
       }
 
@@ -69,9 +82,16 @@ export default class Row extends Component {
     },
 
     onPanResponderRelease: (e, gestureState) => {
-      this._cancelLongPress();
+      if (this._wasLongPress) {
+        this._toggleActive(e, gestureState);
 
-      this._toggleActive(e, gestureState);
+      } else if (this._isTouchInsideElement(e)) {
+        this._cancelLongPress();
+
+        if (this.props.onPress) {
+          this.props.onPress();
+        }
+      }
     },
 
     onPanResponderTerminationRequest: () => {
@@ -87,6 +107,16 @@ export default class Row extends Component {
 
     onPanResponderTerminate: () => {
       this._cancelLongPress();
+
+      // If responder terminated while dragging,
+      // deactivate the element and move to the initial location.
+      if (this._active) {
+        this._toggleActive(e, gestureState);
+
+        if (shallowEqual(this.props.location, this._location)) {
+          this._relocate(this.props.location);
+        }
+      }
     },
   });
 
@@ -118,7 +148,7 @@ export default class Row extends Component {
       <Animated.View
         {...this._panResponder.panHandlers}
         style={[style, styles.container, this._animatedLocation.getLayout()]}
-        onLayout={this.props.onLayout}>
+        onLayout={this._onLayout}>
         {children}
       </Animated.View>
     );
@@ -132,9 +162,12 @@ export default class Row extends Component {
     this._location = nextLocation;
 
     if (animated) {
+      this._isAnimationRunning = true;
       Animated.timing(this._animatedLocation, {
         toValue: nextLocation,
-      }).start();
+      }).start(() => {
+        this._isAnimationRunning = false;
+      });
     } else {
       this._animatedLocation.setValue(nextLocation);
     }
@@ -152,12 +185,33 @@ export default class Row extends Component {
 
   _mapGestureToMove(prevGestureState, gestureState) {
     return {
-      dy: gestureState.dy - prevGestureState.dy,
+      dy: gestureState.moveY - prevGestureState.moveY,
     };
+  }
+
+  _isDisabled() {
+      return this.props.disabled ||
+        this._isAnimationRunning && this.props.disabledDuringAnimation;
+    }
+
+  _isTouchInsideElement({nativeEvent}) {
+    return this._layout &&
+      nativeEvent.locationX >= 0 &&
+      nativeEvent.locationX <= this._layout.width &&
+      nativeEvent.locationY >= 0 &&
+      nativeEvent.locationY <= this._layout.height;
   }
 
   _onChangeLocation = (value) => {
     this._location = value;
+  };
+
+  _onLayout = (e) => {
+      this._layout = e.nativeEvent.layout;
+
+      if (this.props.onLayout) {
+          this.props.onLayout(e);
+      }
   };
 }
 
