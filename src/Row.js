@@ -165,6 +165,7 @@ export default class Row extends Component {
       this._isAnimationRunning = true;
       Animated.timing(this._animatedLocation, {
         toValue: nextLocation,
+        duration: 300,
       }).start(() => {
         this._isAnimationRunning = false;
       });
