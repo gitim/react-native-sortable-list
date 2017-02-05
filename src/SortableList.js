@@ -27,6 +27,7 @@ export default class SortableList extends Component {
     onChangeOrder: PropTypes.func,
     onActivateRow: PropTypes.func,
     onReleaseRow: PropTypes.func,
+    onMoveRow: PropTypes.func,
   };
 
   static defaultProps = {
@@ -464,6 +465,10 @@ export default class SortableList extends Component {
     this._setOrderOnMove();
 
     this._scrollOnMove(e);
+
+    if (this.props.onMoveRow) {
+      this.props.onMoveRow(e, gestureState, location);
+    }
   };
 
   _onScroll = ({nativeEvent: {contentOffset}}) => {
