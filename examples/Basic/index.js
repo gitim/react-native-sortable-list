@@ -14,6 +14,7 @@ import {
   Image,
   View,
   Dimensions,
+  Platform,
 } from 'react-native';
 import SortableList from 'react-native-sortable-list';
 
@@ -82,56 +83,41 @@ class Basic extends Component {
 }
 
 class Row extends Component {
-  state = {
-    style: {
-      shadowRadius: new Animated.Value(2),
-      transform: [{scale: new Animated.Value(1)}],
-    }
+
+  constructor(props) {
+    super(props);
+
+    this._active = new Animated.Value(0);
+    this._style = Platform.OS === 'ios'
+      ? {
+        shadowRadius: this._active.interpolate({
+          inputRange: [0, 1],
+          outputRange: [2, 10],
+        }),
+        transform: [{
+          scale: this._active.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, 1.1],
+          }),
+        }],
+      }
+      : {
+        backgroundColor: this._active.interpolate({
+          inputRange: [0, 1],
+          outputRange: ['#fff', '#e9e9e9'],
+        }),
+      };
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.active !== nextProps.active) {
-      if (nextProps.active) {
-        this.startActivationAnimation();
-      } else {
-        this.startDeactivationAnimation();
-      }
+      Animated.timing(this._active, {
+        duration: 100,
+        easing: Easing.out(Easing.quad),
+        toValue: Number(nextProps.active),
+      }).start();
     }
   }
-
-  startActivationAnimation = () => {
-    const {style} = this.state;
-
-    Animated.parallel([
-      Animated.timing(style.transform[0].scale, {
-        duration: 100,
-        easing: Easing.out(Easing.quad),
-        toValue: 1.1
-      }),
-      Animated.timing(style.shadowRadius, {
-        duration: 100,
-        easing: Easing.out(Easing.quad),
-        toValue: 10
-      }),
-    ]).start();
-  };
-
-  startDeactivationAnimation = () => {
-    const {style} = this.state;
-
-    Animated.parallel([
-      Animated.timing(style.transform[0].scale, {
-        duration: 100,
-        easing: Easing.out(Easing.quad),
-        toValue: 1
-      }),
-      Animated.timing(style.shadowRadius, {
-        duration: 100,
-        easing: Easing.out(Easing.quad),
-        toValue: 2
-      }),
-    ]).start();
-  };
 
   render() {
    const {data, active} = this.props;
@@ -139,7 +125,7 @@ class Row extends Component {
     return (
       <Animated.View style={[
         styles.row,
-        this.state.style,
+        this._style,
       ]}>
         <Image source={{uri: data.image}} style={styles.image} />
         <Text style={styles.text}>{data.text}</Text>
@@ -153,8 +139,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#eee',
-    paddingTop: 60,
+
+    ...Platform.select({
+      ios: {
+        backgroundColor: '#eee',
+        paddingTop: 60,
+      },
+
+      android: {
+        backgroundColor: '#fff',
+        paddingTop: 0,
+      },
+    }),
   },
 
   list: {
@@ -163,35 +159,47 @@ const styles = StyleSheet.create({
 
   contentContainer: {
     width: window.width,
-    paddingHorizontal: 30,
+    paddingHorizontal: Platform.OS === 'ios' ? 30 : 0,
   },
 
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     padding: 16,
-    marginVertical: 5,
-    height: 90,
-    width: window.width - 30 * 2,
-    borderRadius: 4,
-    shadowColor: 'rgba(0,0,0,0.2)',
-    shadowOpacity: 1,
-    shadowOffset: {height: 2, width: 2},
-    shadowRadius: 2,
+
+    height: 80,
+
+    ...Platform.select({
+      ios: {
+        width: window.width - 30 * 2,
+        marginVertical: 5,
+        borderRadius: 4,
+        shadowColor: 'rgba(0,0,0,0.2)',
+        shadowOpacity: 1,
+        shadowOffset: {height: 2, width: 2},
+        shadowRadius: 2,
+      },
+
+      android: {
+        width: window.width,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderColor: '#e5e5e5',
+      },
+    })
   },
 
   image: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     marginRight: 30,
-    borderRadius: 30,
+    borderRadius: 25,
   },
 
   text: {
     fontSize: 24,
   },
-
 });
 
 AppRegistry.registerComponent('Basic', () => Basic);
