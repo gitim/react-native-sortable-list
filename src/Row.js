@@ -3,6 +3,7 @@ import {Animated, PanResponder, StyleSheet} from 'react-native';
 import {shallowEqual} from './utils';
 
 const ACTIVATION_DELAY = 200;
+const DOUBLE_PRESS_DELAY = 500;
 
 export default class Row extends Component {
   static propTypes = {
@@ -14,6 +15,9 @@ export default class Row extends Component {
       x: PropTypes.number,
       y: PropTypes.number,
     }),
+
+    // Will be called on double press
+    onDoublePress: PropTypes.func,
 
     // Will be called on long press.
     onActivate: PropTypes.func,
@@ -28,6 +32,7 @@ export default class Row extends Component {
 
   static defaultProps = {
     location: {x: 0, y: 0},
+    lastPress: 0
   };
 
   constructor(props) {
@@ -46,6 +51,16 @@ export default class Row extends Component {
     onPanResponderGrant: (e, gestureState) => {
       e.persist();
       this._wasLongPress = false;
+
+      if(this.props.onDoublePress) {
+        this.setState({
+          lastPress: new Date().getTime()
+        })
+        var delta = new Date().getTime() - this.state.lastPress;
+        if(delta < DOUBLE_PRESS_DELAY) {
+            this.props.onDoublePress();
+        }
+      }
 
       this._longPressTimer = setTimeout(() => {
         this._wasLongPress = true;

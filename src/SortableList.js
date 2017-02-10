@@ -27,6 +27,7 @@ export default class SortableList extends Component {
     onChangeOrder: PropTypes.func,
     onActivateRow: PropTypes.func,
     onReleaseRow: PropTypes.func,
+    onDoublePressRow: PropTypes.func,
   };
 
   static defaultProps = {
@@ -200,6 +201,7 @@ export default class SortableList extends Component {
           onActivate={this._onActivateRow.bind(this, key, index)}
           onRelease={this._onReleaseRow.bind(this, key)}
           onMove={this._onMoveRow}>
+          onDoublePress={this._onDoublePressRow.bind(this, key)}>
           {renderRow({
             key,
             data: data[key],
@@ -451,6 +453,10 @@ export default class SortableList extends Component {
     if (this.props.onReleaseRow) {
       this.props.onReleaseRow(rowKey);
     }
+  };
+
+  _onDoublePressRow = (rowKey) => {
+    this.props.onDoublePressRow(rowKey);
   };
 
   _onMoveRow = (e, gestureState, location) => {
