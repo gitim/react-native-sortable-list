@@ -3,7 +3,6 @@ import {Animated, ScrollView, View, StyleSheet, Platform} from 'react-native';
 import {shallowEqual, swapArrayElements} from './utils';
 import Row from './Row';
 
-const AUTOSCROLL_AREA_HEIGTH = 60;
 const AUTOSCROLL_INTERVAL = 100;
 const ZINDEX = Platform.OS === 'ios' ? 'zIndex' : 'elevation';
 
@@ -27,11 +26,13 @@ export default class SortableList extends Component {
     onChangeOrder: PropTypes.func,
     onActivateRow: PropTypes.func,
     onReleaseRow: PropTypes.func,
+    autoscrollAreaHeight: PropTypes.number,
   };
 
   static defaultProps = {
     sortingEnabled: true,
     scrollEnabled: true,
+    autoscrollAreaHeight: 60,
   }
 
   /**
@@ -345,8 +346,8 @@ export default class SortableList extends Component {
   _scrollOnMove(e) {
     const {pageY} = e.nativeEvent;
     const {containerLayout} = this.state;
-    const inAutoScrollUpArea = pageY < containerLayout.pageY + AUTOSCROLL_AREA_HEIGTH;
-    const inAutoScrollDownArea = pageY > containerLayout.pageY + containerLayout.height - AUTOSCROLL_AREA_HEIGTH;
+    const inAutoScrollUpArea = pageY < containerLayout.pageY + this.props.autoscrollAreaHeight;
+    const inAutoScrollDownArea = pageY > containerLayout.pageY + containerLayout.height - this.props.autoscrollAreaHeight;
 
     if (!inAutoScrollUpArea &&
       !inAutoScrollDownArea &&
