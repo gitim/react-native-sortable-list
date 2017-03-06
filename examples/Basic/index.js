@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
 
   text: {
     fontSize: 24,
+    color: '#222222',
   },
 });
 
