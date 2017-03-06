@@ -23,7 +23,7 @@ const window = Dimensions.get('window');
 
 const data = {
   0: {
-    image: 'https://placekitten.com/200/200',
+    image: 'https://placekitten.com/200/240',
     text: 'Chloe',
   },
   1: {
