@@ -68,6 +68,7 @@ class Basic extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Text style={styles.title}>React Native Sortable List</Text>
         <SortableList
           style={styles.list}
           contentContainerStyle={styles.contentContainer}
@@ -139,18 +140,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#eee',
 
-    // ...Platform.select({
-      // ios: {
-        backgroundColor: '#eee',
-        paddingTop: 60,
-      // },
+    ...Platform.select({
+      ios: {
+        paddingTop: 20,
+      },
+    }),
+  },
 
-      // android: {
-        // backgroundColor: '#fff',
-        // paddingTop: 0,
-      // },
-    // }),
+  title: {
+    fontSize: 20,
+    paddingVertical: 20,
+    color: '#999999',
   },
 
   list: {
