@@ -26,10 +26,14 @@ npm i react-native-sortable-list --save
 - **style** (Object, Array)
 - **contentContainerStyle** (Object, Array) these styles will be applied to the inner scroll view content container
 - **sortingEnabled** (boolean) when false, rows are not sortable. The default value is true.
-- **scrollEnabled** (boolean) when false, the content does not scrollable. The default value is true.<br /><br />
+- **scrollEnabled** (boolean) when false, the content does not scrollable. The default value is true.
+- **autoscrollAreaHeight** (number) determines the height of the area at the top and the bottom of the list that will trigger autoscrolling. Defaults to 60.<br />
+<br />
 - **renderRow** (function)<br />
 `({key, index, data, disabled, active}) => renderable`<br />
-Takes a row key, row index, data entry from the data source and its statuses disabled, active and should return a renderable component to be rendered as the row.<br /><br />
+Takes a row key, row index, data entry from the data source and its statuses disabled, active and should return a renderable component to be rendered as the row.
+<br />
+<br />
 - **onChangeOrder** (function)<br />
 `(nextOrder) => void`<br />
 Called when rows were reordered, takes an array of rows keys of the next rows order.
