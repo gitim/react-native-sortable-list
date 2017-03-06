@@ -40,21 +40,16 @@ export default class Row extends Component {
   }
 
   _panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => {
-      if (this._isDisabled()) return false;
+    onStartShouldSetPanResponder: () => !this._isDisabled(),
 
-      return true;
+    onMoveShouldSetPanResponder: () => !this._isDisabled(),
+
+    onShouldBlockNativeResponder: () => {
+      // Returns whether this component should block native components from becoming the JS
+      // responder. Returns true by default. Is currently only supported on android.
+      // NOTE: Returning false here allows us to scroll unless it's a long press on a row.
+      return false;
     },
-
-    onMoveShouldSetPanResponder: () => {
-      if (this._isDisabled()) return false;
-
-      return true;
-    },
-
-    onShouldBlockNativeResponder: () => {          // Returns whether this component should block native components from becoming the JS
-      return false;                                // responder. Returns true by default. Is currently only supported on android.
-    },                                             // NOTE: Returning false here allows us to scroll unless it's a long press on a row.
 
     onPanResponderGrant: (e, gestureState) => {
       e.persist();
