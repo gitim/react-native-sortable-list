@@ -89,25 +89,36 @@ class Row extends Component {
     super(props);
 
     this._active = new Animated.Value(0);
-    this._style = Platform.OS === 'ios'
-      ? {
-        shadowRadius: this._active.interpolate({
-          inputRange: [0, 1],
-          outputRange: [2, 10],
-        }),
-        transform: [{
-          scale: this._active.interpolate({
+
+    this._style = {
+      ...Platform.select({
+        ios: {
+          transform: [{
+            scale: this._active.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 1.1],
+            }),
+          }],
+          shadowRadius: this._active.interpolate({
             inputRange: [0, 1],
-            outputRange: [1, 1.1],
+            outputRange: [2, 10],
           }),
-        }],
-      }
-      : {
-        backgroundColor: this._active.interpolate({
-          inputRange: [0, 1],
-          outputRange: ['#fff', '#e9e9e9'],
-        }),
-      };
+        },
+
+        android: {
+          transform: [{
+            scale: this._active.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 1.07],
+            }),
+          }],
+          elevation: this._active.interpolate({
+            inputRange: [0, 1],
+            outputRange: [2, 6],
+          }),
+        },
+      })
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -168,7 +179,7 @@ const styles = StyleSheet.create({
       },
 
       android: {
-        paddingHorizontal: 20,
+        paddingHorizontal: 0,
       }
     })
   },
@@ -180,7 +191,8 @@ const styles = StyleSheet.create({
     padding: 16,
     height: 80,
     flex: 1,
-    marginVertical: 5,
+    marginTop: 7,
+    marginBottom: 12,
     borderRadius: 4,
     
 
@@ -194,9 +206,9 @@ const styles = StyleSheet.create({
       },
 
       android: {
-        width: window.width - 25 * 2,
-        elevation: 2,
-        marginHorizontal: 5,
+        width: window.width - 30 * 2,
+        elevation: 0,
+        marginHorizontal: 30,
       },
     })
   },
