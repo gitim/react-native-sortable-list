@@ -8,7 +8,7 @@
 - [Questions?](#questions)
 
 ### Demo
-<a href="https://raw.githubusercontent.com/gitim/react-native-sortable-list/master/demo.gif"><img src="https://raw.githubusercontent.com/gitim/react-native-sortable-list/master/demo.gif" width="350"></a>
+<a href="https://raw.githubusercontent.com/gitim/react-native-sortable-list/master/demo.gif"><img src="https://raw.githubusercontent.com/gitim/react-native-sortable-list/master/demo.gif"></a>
 
 ### Installation
 ```bash
