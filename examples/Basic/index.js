@@ -113,8 +113,8 @@ class Row extends Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.active !== nextProps.active) {
       Animated.timing(this._active, {
-        duration: 100,
-        easing: Easing.out(Easing.quad),
+        duration: 300,
+        easing: Easing.bounce,
         toValue: Number(nextProps.active),
       }).start();
     }
