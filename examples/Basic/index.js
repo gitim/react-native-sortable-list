@@ -140,17 +140,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
 
-    ...Platform.select({
-      ios: {
+    // ...Platform.select({
+      // ios: {
         backgroundColor: '#eee',
         paddingTop: 60,
-      },
+      // },
 
-      android: {
-        backgroundColor: '#fff',
-        paddingTop: 0,
-      },
-    }),
+      // android: {
+        // backgroundColor: '#fff',
+        // paddingTop: 0,
+      // },
+    // }),
   },
 
   list: {
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
 
   contentContainer: {
     width: window.width,
-    paddingHorizontal: Platform.OS === 'ios' ? 30 : 0,
+    paddingHorizontal: 30,
   },
 
   row: {
@@ -167,14 +167,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     padding: 16,
-
     height: 80,
+    flex: 1,
+    marginVertical: 5,
+    borderRadius: 4,
+    width: window.width - 30 * 2,
 
     ...Platform.select({
       ios: {
-        width: window.width - 30 * 2,
-        marginVertical: 5,
-        borderRadius: 4,
         shadowColor: 'rgba(0,0,0,0.2)',
         shadowOpacity: 1,
         shadowOffset: {height: 2, width: 2},
@@ -182,10 +182,9 @@ const styles = StyleSheet.create({
       },
 
       android: {
-        width: window.width,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: '#e5e5e5',
+        elevation: 2,
+        // marginHorizontal: 10,
+        // borderColor: '#e5e5e5',
       },
     })
   },
