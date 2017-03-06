@@ -159,7 +159,16 @@ const styles = StyleSheet.create({
 
   contentContainer: {
     width: window.width,
-    paddingHorizontal: 30,
+
+    ...Platform.select({
+      ios: {
+        paddingHorizontal: 30,
+      },
+
+      android: {
+        paddingHorizontal: 20,
+      }
+    })
   },
 
   row: {
@@ -171,10 +180,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 5,
     borderRadius: 4,
-    width: window.width - 30 * 2,
+    
 
     ...Platform.select({
       ios: {
+        width: window.width - 30 * 2,
         shadowColor: 'rgba(0,0,0,0.2)',
         shadowOpacity: 1,
         shadowOffset: {height: 2, width: 2},
@@ -182,9 +192,9 @@ const styles = StyleSheet.create({
       },
 
       android: {
+        width: window.width - 25 * 2,
         elevation: 2,
-        // marginHorizontal: 10,
-        // borderColor: '#e5e5e5',
+        marginHorizontal: 5,
       },
     })
   },
