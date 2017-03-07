@@ -113,7 +113,7 @@ export default class Row extends Component {
       return true;
     },
 
-    onPanResponderTerminate: () => {
+    onPanResponderTerminate: (e, gestureState) => {
       this._cancelLongPress();
 
       // If responder terminated while dragging,
