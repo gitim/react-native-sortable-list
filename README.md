@@ -43,6 +43,9 @@ Called when a row was activated (user long tapped).
 - **onReleaseRow** (function)<br />
 `(key) => void`<br />
 Called when the active row was released.
+- **onPressRow** (function)<br />
+`(key) => void`<br />
+Called when a row was pressed.
 
 ####Methods
 - **scrollBy(dy?, animated?)** scrolls by a given y offset, either immediately or with a smooth animation

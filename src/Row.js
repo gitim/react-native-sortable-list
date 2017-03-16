@@ -18,6 +18,7 @@ export default class Row extends Component {
     // Will be called on long press.
     onActivate: PropTypes.func,
     onLayout: PropTypes.func,
+    onPress: PropTypes.func,
 
     // Will be called, when user (directly) move the view.
     onMove: PropTypes.func,
