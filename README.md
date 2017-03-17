@@ -31,9 +31,8 @@ npm i react-native-sortable-list --save
 <br />
 - **renderRow** (function)<br />
 `({key, index, data, disabled, active}) => renderable`<br />
-Takes a row key, row index, data entry from the data source and its statuses disabled, active and should return a renderable component to be rendered as the row.
-<br />
-<br />
+Takes a row key, row index, data entry from the data source and its statuses disabled, active and should return a renderable component to be rendered as the row.<br />
+
 - **onChangeOrder** (function)<br />
 `(nextOrder) => void`<br />
 Called when rows were reordered, takes an array of rows keys of the next rows order.
