@@ -20,7 +20,7 @@ npm i react-native-sortable-list --save
 
 
 ### API
-####Props
+#### Props
 - **data** (Object) data source
 - **order** (Array) an array of keys from data, the order of keys from the array will be used to initial rows order
 - **style** (Object, Array)
@@ -47,7 +47,7 @@ Called when the active row was released.
 `(key) => void`<br />
 Called when a row was pressed.
 
-####Methods
+#### Methods
 - **scrollBy(dy?, animated?)** scrolls by a given y offset, either immediately or with a smooth animation
 - **scrollTo(y?, animated?)** scrolls to a given y offset, either immediately or with a smooth animation
 - **scrollToRowKey(key, animated?)** scrolls to a given row key, either immediately or with a smooth animation
