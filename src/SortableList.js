@@ -241,12 +241,14 @@ export default class SortableList extends Component {
   _animateRowsAppearance(onAnimationEnd) {
     Animated.timing(this.state.style.opacity, {
       toValue: 1,
+      useNativeDriver: true
     }).start(onAnimationEnd);
   }
 
   _animateRowsDisappearance(onAnimationEnd) {
     Animated.timing(this.state.style.opacity, {
       toValue: 0,
+      useNativeDriver: true
     }).start(onAnimationEnd);
   }
 
