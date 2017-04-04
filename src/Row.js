@@ -201,7 +201,7 @@ export default class Row extends Component {
 
   _isDisabled() {
       return this.props.disabled ||
-        this._isAnimationRunning && this.props.disabledDuringAnimation;
+        this._isAnimationRunning;
     }
 
   _isTouchInsideElement({nativeEvent}) {
