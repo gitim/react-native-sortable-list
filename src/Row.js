@@ -170,7 +170,7 @@ export default class Row extends Component {
   _relocate(nextLocation, animated) {
     this._location = nextLocation;
 
-    if (animated) {
+    if (animated && !this._isAnimationRunning) {
       this._isAnimationRunning = true;
       Animated.timing(this._animatedLocation, {
         toValue: nextLocation,
