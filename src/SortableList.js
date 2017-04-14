@@ -538,7 +538,9 @@ export default class SortableList extends Component {
     this._movingDirectionChanged = prevMovingDirection !== this._movingDirection;
     this._setOrderOnMove();
 
-    this._scrollOnMove(e);
+    if (this.props.scrollEnabled) {
+      this._scrollOnMove(e);
+    }
   };
 
   _onScroll = ({nativeEvent: {contentOffset}}) => {
