@@ -1,6 +1,6 @@
 {
   "name": "react-native-sortable-list",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "React Native Sortable List component",
   "main": "index.js",
   "repository": {
