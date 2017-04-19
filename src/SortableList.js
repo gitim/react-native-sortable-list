@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Animated, ScrollView, View, StyleSheet, Platform} from 'react-native';
+import {Animated, ScrollView, View, StyleSheet, Platform, refreshControl} from 'react-native';
 import {shallowEqual, swapArrayElements} from './utils';
 import Row from './Row';
 
@@ -21,6 +21,7 @@ export default class SortableList extends Component {
     sortingEnabled: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
     horizontal: PropTypes.bool,
+    refreshControl: PropTypes.object,
 
     renderRow: PropTypes.func.isRequired,
 
@@ -154,6 +155,7 @@ export default class SortableList extends Component {
     const {contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([this.props.style, this.state.style]);
     const innerContainerStyle = [styles.container];
+    let refreshControl = this.props.refreshControl;
 
     if (horizontal) {
       innerContainerStyle.push({width: contentWidth});
@@ -161,9 +163,19 @@ export default class SortableList extends Component {
       innerContainerStyle.push({height: contentHeight});
     }
 
+    if(refreshControl) {
+      refreshControl=(
+        <RefreshControl
+          {...this.props.refreshControl.props}
+          enabled={scrollEnabled}
+        />
+      )
+    }
+
     return (
       <Animated.View style={containerStyle} ref={this._onRefContainer}>
         <ScrollView
+          refreshControl={refreshControl}
           ref={this._onRefScrollView}
           horizontal={horizontal}
           contentContainerStyle={contentContainerStyle}
