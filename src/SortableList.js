@@ -145,9 +145,8 @@ export default class SortableList extends Component {
   }
 
   render() {
-    const {contentContainerStyle, horizontal} = this.props;
+    const {contentContainerStyle, horizontal, style: containerStyle} = this.props;
     const {contentHeight, contentWidth, scrollEnabled} = this.state;
-    const containerStyle = StyleSheet.create(this.props.style);
     const innerContainerStyle = [styles.container];
 
     if (horizontal) {
