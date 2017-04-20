@@ -57,10 +57,7 @@ export default class SortableList extends Component {
     activeRowIndex: null,
     releasedRowKey: null,
     sortingEnabled: this.props.sortingEnabled,
-    scrollEnabled: this.props.scrollEnabled,
-    style: {
-      opacity: new Animated.Value(0),
-    },
+    scrollEnabled: this.props.scrollEnabled
   };
 
   componentDidMount() {
@@ -72,16 +69,14 @@ export default class SortableList extends Component {
     const {data: nextData, order: nextOrder} = nextProps;
 
     if (data && nextData && !shallowEqual(data, nextData)) {
-      this._animateRowsDisappearance(() => {
-        uniqueRowKey.id++;
-        this._areRowsAnimated = false;
-        this._rowsLayouts = [];
-        this.setState({
-          data: nextData,
-          containerLayout: null,
-          rowsLayouts: null,
-          order: nextOrder || Object.keys(nextData)
-        });
+      uniqueRowKey.id++;
+      this._areRowsAnimated = false;
+      this._rowsLayouts = [];
+      this.setState({
+        data: nextData,
+        containerLayout: null,
+        rowsLayouts: null,
+        order: nextOrder || Object.keys(nextData)
       });
 
     } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
@@ -152,7 +147,7 @@ export default class SortableList extends Component {
   render() {
     const {contentContainerStyle, horizontal} = this.props;
     const {contentHeight, contentWidth, scrollEnabled} = this.state;
-    const containerStyle = StyleSheet.flatten([this.props.style, this.state.style]);
+    const containerStyle = StyleSheet.create(this.props.style);
     const innerContainerStyle = [styles.container];
 
     if (horizontal) {
@@ -267,9 +262,7 @@ export default class SortableList extends Component {
             rowsLayouts: rowsLayoutsByKey,
             contentHeight,
             contentWidth,
-          }, () => {
-            this._animateRowsAppearance(() => (this._areRowsAnimated = true));
-          });
+          }, () => (this._areRowsAnimated = true));
         });
       });
   }
