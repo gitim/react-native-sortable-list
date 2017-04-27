@@ -44,6 +44,8 @@ Called when the active row was released.
 - **onPressRow** (function)<br />
 `(key) => void`<br />
 Called when a row was pressed.
+- **refreshControl** (Object)<br />
+A RefreshControl that works the same way as a ScrollView's refreshControl.
 
 #### Methods
 - **scrollBy(dy?, animated?)** scrolls by a given y offset, either immediately or with a smooth animation
