@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Animated, ScrollView, View, StyleSheet, Platform, RefreshControl} from 'react-native';
+import {ScrollView, View, StyleSheet, Platform, RefreshControl} from 'react-native';
 import {shallowEqual, swapArrayElements} from './utils';
 import Row from './Row';
 
@@ -164,7 +164,7 @@ export default class SortableList extends Component {
     }
 
     return (
-      <Animated.View style={containerStyle} ref={this._onRefContainer}>
+      <View style={StyleSheet.flatten([containerStyle, {opacity: 1}])} ref={this._onRefContainer}>
         <ScrollView
           refreshControl={refreshControl}
           ref={this._onRefScrollView}
@@ -177,7 +177,7 @@ export default class SortableList extends Component {
             {this._renderRows()}
           </View>
         </ScrollView>
-      </Animated.View>
+      </View>
     );
   }
 
@@ -536,8 +536,8 @@ export default class SortableList extends Component {
       this._contentOffset = contentOffset;
   };
 
-  _onRefContainer = (animatedComponent) => {
-    this._container = animatedComponent && animatedComponent._component;
+  _onRefContainer = (component) => {
+    this._container = component;
   };
 
   _onRefScrollView = (component) => {
