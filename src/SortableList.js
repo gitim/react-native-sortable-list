@@ -50,6 +50,7 @@ export default class SortableList extends Component {
   _contentOffset = {x: 0, y: 0};
 
   state = {
+    animated: false,
     order: this.props.order || Object.keys(this.props.data),
     rowsLayouts: null,
     containerLayout: null,
@@ -71,9 +72,9 @@ export default class SortableList extends Component {
 
     if (data && nextData && !shallowEqual(data, nextData)) {
       uniqueRowKey.id++;
-      this._areRowsAnimated = false;
       this._rowsLayouts = [];
       this.setState({
+        animated: false,
         data: nextData,
         containerLayout: null,
         rowsLayouts: null,
@@ -146,8 +147,9 @@ export default class SortableList extends Component {
   }
 
   render() {
-    const {contentContainerStyle, horizontal, style: containerStyle} = this.props;
-    const {contentHeight, contentWidth, scrollEnabled} = this.state;
+    const {contentContainerStyle, horizontal, style} = this.props;
+    const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
+    const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
     const innerContainerStyle = [styles.container];
     let {refreshControl} = this.props;
 
@@ -164,7 +166,7 @@ export default class SortableList extends Component {
     }
 
     return (
-      <View style={StyleSheet.flatten([containerStyle, {opacity: 1}])} ref={this._onRefContainer}>
+      <View style={containerStyle} ref={this._onRefContainer}>
         <ScrollView
           refreshControl={refreshControl}
           ref={this._onRefScrollView}
@@ -183,7 +185,7 @@ export default class SortableList extends Component {
 
   _renderRows() {
     const {horizontal, sortingEnabled, renderRow} = this.props;
-    const {order, data, activeRowKey, releasedRowKey, rowsLayouts} = this.state;
+    const {animated, order, data, activeRowKey, releasedRowKey, rowsLayouts} = this.state;
 
     let rowHeight = 0;
     let rowWidth = 0;
@@ -229,7 +231,7 @@ export default class SortableList extends Component {
           key={uniqueRowKey(key)}
           ref={this._onRefRow.bind(this, key)}
           horizontal={horizontal}
-          animated={this._areRowsAnimated && !active}
+          animated={animated && !active}
           disabled={!sortingEnabled}
           style={style}
           location={location}
@@ -270,7 +272,9 @@ export default class SortableList extends Component {
             rowsLayouts: rowsLayoutsByKey,
             contentHeight,
             contentWidth,
-          }, () => (this._areRowsAnimated = true));
+          }, () => {
+            this.setState({animated: true});
+          });
         });
       });
   }
