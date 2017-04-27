@@ -21,7 +21,7 @@ export default class SortableList extends Component {
     sortingEnabled: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
     horizontal: PropTypes.bool,
-    refreshControl: PropTypes.object,
+    refreshControl: PropTypes.element,
 
     renderRow: PropTypes.func.isRequired,
 
@@ -149,7 +149,7 @@ export default class SortableList extends Component {
     const {contentContainerStyle, horizontal, style: containerStyle} = this.props;
     const {contentHeight, contentWidth, scrollEnabled} = this.state;
     const innerContainerStyle = [styles.container];
-    let refreshControl = this.props.refreshControl;
+    let {refreshControl} = this.props;
 
     if (horizontal) {
       innerContainerStyle.push({width: contentWidth});
@@ -157,13 +157,10 @@ export default class SortableList extends Component {
       innerContainerStyle.push({height: contentHeight});
     }
 
-    if(refreshControl) {
-      refreshControl=(
-        <RefreshControl
-          {...this.props.refreshControl.props}
-          enabled={scrollEnabled}
-        />
-      )
+    if (refreshControl && refreshControl.type === RefreshControl) {
+      refreshControl = React.cloneElement(this.props.refreshControl, {
+        enabled: scrollEnabled, // fix for Android
+      });
     }
 
     return (
