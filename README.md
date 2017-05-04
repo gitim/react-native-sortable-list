@@ -17,6 +17,7 @@ npm i react-native-sortable-list --save
 
 ### Examples
 - [Basic](https://github.com/gitim/react-native-sortable-list/tree/master/examples/Basic)
+- [Horizontal](https://github.com/gitim/react-native-sortable-list/tree/master/examples/Horizontal)
 
 
 ### API
@@ -29,6 +30,8 @@ npm i react-native-sortable-list --save
 - **sortingEnabled** (boolean) when false, rows are not sortable. The default value is true.
 - **scrollEnabled** (boolean) when false, the content does not scrollable. The default value is true.
 - **autoscrollAreaSize** (number) determines the height for vertical list and the width for horizontal list of the area at the begining and the end of the list that will trigger autoscrolling. Defaults to 60.<br />
+- **refreshControl** (element)<br />
+A RefreshControl that works the same way as a ScrollView's refreshControl.
 - **renderRow** (function)<br />
 `({key, index, data, disabled, active}) => renderable`<br />
 Takes a row key, row index, data entry from the data source and its statuses disabled, active and should return a renderable component to be rendered as the row.<br />
@@ -44,8 +47,6 @@ Called when the active row was released.
 - **onPressRow** (function)<br />
 `(key) => void`<br />
 Called when a row was pressed.
-- **refreshControl** (element)<br />
-A RefreshControl that works the same way as a ScrollView's refreshControl.
 
 #### Methods
 - **scrollBy(dy?, animated?)** scrolls by a given y offset, either immediately or with a smooth animation
