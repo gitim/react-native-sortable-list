@@ -153,7 +153,7 @@ export default class SortableList extends Component {
     const {contentContainerStyle, horizontal, style} = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
-    const innerContainerStyle = [styles.container];
+    const innerContainerStyle = [styles.rowsContainer];
     let {refreshControl} = this.props;
 
     if (horizontal) {
@@ -596,5 +596,10 @@ export default class SortableList extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+
+  rowsContainer: {
+    flex: 1,
+    zIndex: 1,
   },
 });
