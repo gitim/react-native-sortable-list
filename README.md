@@ -35,6 +35,9 @@ A RefreshControl that works the same way as a ScrollView's refreshControl.
 - **renderRow** (function)<br />
 `({key, index, data, disabled, active}) => renderable`<br />
 Takes a row key, row index, data entry from the data source and its statuses disabled, active and should return a renderable component to be rendered as the row.<br />
+- **renderFooter** (function)<br />
+`() => renderable`<br />
+Renders returned component at the bottom of the list.
 - **onChangeOrder** (function)<br />
 `(nextOrder) => void`<br />
 Called when rows were reordered, takes an array of rows keys of the next rows order.
