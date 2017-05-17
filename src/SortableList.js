@@ -48,8 +48,6 @@ export default class SortableList extends Component {
    */
   _rowsLayouts = [];
 
-  _footerLayout = null;
-
   _contentOffset = {x: 0, y: 0};
 
   state = {
