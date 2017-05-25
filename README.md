@@ -30,6 +30,7 @@ npm i react-native-sortable-list --save
 - **sortingEnabled?** (boolean) when false, rows are not sortable. The default value is true.
 - **scrollEnabled?** (boolean) when false, the content does not scrollable. The default value is true.
 - **autoscrollAreaSize?** (number) determines the height for vertical list and the width for horizontal list of the area at the begining and the end of the list that will trigger autoscrolling. Defaults to 60.<br />
+- **rowActivationTime?** (number) determines time delay in ms before pressed row becomes active. Defaults to 200 ms.<br />
 - **refreshControl?** (element)<br />
 A RefreshControl that works the same way as a ScrollView's refreshControl.
 - **renderRow** (function)<br />
