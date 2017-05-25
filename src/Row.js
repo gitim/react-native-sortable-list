@@ -2,8 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {Animated, PanResponder, StyleSheet} from 'react-native';
 import {shallowEqual} from './utils';
 
-const ACTIVATION_DELAY = 200;
-
 export default class Row extends Component {
   static propTypes = {
     children: PropTypes.node,
@@ -15,6 +13,7 @@ export default class Row extends Component {
       x: PropTypes.number,
       y: PropTypes.number,
     }),
+    activationTime: PropTypes.number,
 
     // Will be called on long press.
     onActivate: PropTypes.func,
@@ -30,6 +29,7 @@ export default class Row extends Component {
 
   static defaultProps = {
     location: {x: 0, y: 0},
+    activationTime: 200,
   };
 
   constructor(props) {
@@ -66,7 +66,7 @@ export default class Row extends Component {
           moveY: gestureState.y0,
         };
         this._toggleActive(e, gestureState);
-      }, ACTIVATION_DELAY);
+      }, this.props.activationTime);
     },
 
     onPanResponderMove: (e, gestureState) => {

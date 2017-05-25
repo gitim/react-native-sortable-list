@@ -22,6 +22,8 @@ export default class SortableList extends Component {
     scrollEnabled: PropTypes.bool,
     horizontal: PropTypes.bool,
     refreshControl: PropTypes.element,
+    autoscrollAreaSize: PropTypes.number,
+    rowActivationTime: PropTypes.number,
 
     renderRow: PropTypes.func.isRequired,
     renderFooter: PropTypes.func,
@@ -29,7 +31,6 @@ export default class SortableList extends Component {
     onChangeOrder: PropTypes.func,
     onActivateRow: PropTypes.func,
     onReleaseRow: PropTypes.func,
-    autoscrollAreaSize: PropTypes.number,
   };
 
   static defaultProps = {
@@ -186,7 +187,7 @@ export default class SortableList extends Component {
   }
 
   _renderRows() {
-    const {horizontal, sortingEnabled, renderRow} = this.props;
+    const {horizontal, rowActivationTime, sortingEnabled, renderRow} = this.props;
     const {animated, order, data, activeRowKey, releasedRowKey, rowsLayouts} = this.state;
 
     let rowHeight = 0;
@@ -233,6 +234,7 @@ export default class SortableList extends Component {
           key={uniqueRowKey(key)}
           ref={this._onRefRow.bind(this, key)}
           horizontal={horizontal}
+          activationTime={rowActivationTime}
           animated={animated && !active}
           disabled={!sortingEnabled}
           style={style}
