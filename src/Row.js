@@ -8,6 +8,8 @@ export default class Row extends Component {
     animated: PropTypes.bool,
     disabled: PropTypes.bool,
     horizontal: PropTypes.bool,
+    // amount of x that can't be draggable
+    undraggable: PropTypes.number,
     style: Animated.View.propTypes.style,
     location: PropTypes.shape({
       x: PropTypes.number,
@@ -56,6 +58,11 @@ export default class Row extends Component {
     onPanResponderGrant: (e, gestureState) => {
       e.persist();
       this._wasLongPress = false;
+
+      // using gestureState.x0 instead of e.nativeEvent.locationX because switch passes its relativeX
+      if (gestureState.x0 > this._layout.width - this.props.undraggable) {
+        return;
+      }
 
       this._longPressTimer = setTimeout(() => {
         this._wasLongPress = true;
