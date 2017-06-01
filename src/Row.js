@@ -2,18 +2,18 @@ import React, {Component, PropTypes} from 'react';
 import {Animated, PanResponder, StyleSheet} from 'react-native';
 import {shallowEqual} from './utils';
 
-const ACTIVATION_DELAY = 200;
-
 export default class Row extends Component {
   static propTypes = {
     children: PropTypes.node,
     animated: PropTypes.bool,
     disabled: PropTypes.bool,
+    horizontal: PropTypes.bool,
     style: Animated.View.propTypes.style,
     location: PropTypes.shape({
       x: PropTypes.number,
       y: PropTypes.number,
     }),
+    activationTime: PropTypes.number,
 
     // Will be called on long press.
     onActivate: PropTypes.func,
@@ -29,6 +29,7 @@ export default class Row extends Component {
 
   static defaultProps = {
     location: {x: 0, y: 0},
+    activationTime: 200,
   };
 
   constructor(props) {
@@ -65,7 +66,7 @@ export default class Row extends Component {
           moveY: gestureState.y0,
         };
         this._toggleActive(e, gestureState);
-      }, ACTIVATION_DELAY);
+      }, this.props.activationTime);
     },
 
     onPanResponderMove: (e, gestureState) => {
@@ -194,14 +195,14 @@ export default class Row extends Component {
   }
 
   _mapGestureToMove(prevGestureState, gestureState) {
-    return {
-      dy: gestureState.moveY - prevGestureState.moveY,
-    };
+    return this.props.horizontal
+      ? {dx: gestureState.moveX - prevGestureState.moveX}
+      : {dy: gestureState.moveY - prevGestureState.moveY};
   }
 
   _isDisabled() {
       return this.props.disabled ||
-        this._isAnimationRunning && this.props.disabledDuringAnimation;
+        this._isAnimationRunning;
     }
 
   _isTouchInsideElement({nativeEvent}) {
