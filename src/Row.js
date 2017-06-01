@@ -164,7 +164,7 @@ export default class Row extends Component {
     return (
       <Animated.View
         {...this._panResponder.panHandlers}
-        style={[style, styles.container, {transform: this._animatedLocation.getTranslateTransform()}]}
+        style={[style, styles.container, this._animatedLocation.getLayout()]}
         onLayout={this._onLayout}>
         {children}
       </Animated.View>

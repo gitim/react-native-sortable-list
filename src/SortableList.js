@@ -302,7 +302,7 @@ export default class SortableList extends Component {
         });
       });
   }
-  
+
   _scroll(animated) {
     this._scrollView.scrollTo({...this._contentOffset, animated});
   }
