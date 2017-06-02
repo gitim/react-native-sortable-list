@@ -17,7 +17,7 @@ import {
   Platform,
 } from 'react-native';
 import SortableList from 'react-native-sortable-list';
-
+import {shuffle} from 'lodash';
 const window = Dimensions.get('window');
 
 
@@ -65,6 +65,13 @@ const data = {
 };
 
 class Basic extends Component {
+  state = {
+    order: Object.keys(data),
+  }
+
+  componentDidMount() {
+    setInterval(() => this.setState({order: shuffle(this.state.order)}), 3000)
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -73,6 +80,7 @@ class Basic extends Component {
           style={styles.list}
           contentContainerStyle={styles.contentContainer}
           data={data}
+          order={this.state.order}
           renderRow={this._renderRow} />
       </View>
     );
@@ -194,7 +202,7 @@ const styles = StyleSheet.create({
     marginTop: 7,
     marginBottom: 12,
     borderRadius: 4,
-    
+
 
     ...Platform.select({
       ios: {
