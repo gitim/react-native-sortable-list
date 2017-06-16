@@ -47,7 +47,8 @@ export default class SortableList extends Component {
   /**
    * Stores promises of rows’ layouts.
    */
-  _rowsLayouts = [];
+  _rowsLayouts = {};
+  _resolveRowLayout = {};
 
   _contentOffset = {x: 0, y: 0};
 
@@ -64,23 +65,43 @@ export default class SortableList extends Component {
     scrollEnabled: this.props.scrollEnabled
   };
 
+  componentWillMount() {
+    this.state.order.forEach((key) => {
+      this._rowsLayouts[key] = new Promise((resolve) => {
+        this._resolveRowLayout[key] = resolve;
+      });
+    });
+
+    if (this.props.renderFooter && !this.props.horizontal) {
+      this._footerLayout = new Promise((resolve) => {
+        this._resolveFooterLayout = resolve;
+      });
+    }
+  }
+
   componentDidMount() {
     this._onUpdateLayouts();
   }
 
   componentWillReceiveProps(nextProps) {
     const {data, order} = this.state;
-    const {data: nextData, order: nextOrder} = nextProps;
+    let {data: nextData, order: nextOrder} = nextProps;
 
     if (data && nextData && !shallowEqual(data, nextData)) {
+      nextOrder = nextOrder || Object.keys(nextData)
       uniqueRowKey.id++;
-      this._rowsLayouts = [];
+      this._rowsLayouts = {};
+      nextOrder.forEach((key) => {
+        this._rowsLayouts[key] = new Promise((resolve) => {
+          this._resolveRowLayout[key] = resolve;
+        });
+      });
       this.setState({
         animated: false,
         data: nextData,
         containerLayout: null,
         rowsLayouts: null,
-        order: nextOrder || Object.keys(nextData)
+        order: nextOrder
       });
 
     } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
@@ -206,7 +227,6 @@ export default class SortableList extends Component {
     return order.map((key, index) => {
       const style = {[ZINDEX]: 0};
       const location = {x: 0, y: 0};
-      let resolveLayout;
 
       if (rowsLayouts) {
         if (horizontal) {
@@ -218,8 +238,6 @@ export default class SortableList extends Component {
           location.y = nextY;
           nextY += rowsLayouts[key].height;
         }
-      } else {
-        this._rowsLayouts.push(new Promise((resolve) => (resolveLayout = resolve)));
       }
 
       const active = activeRowKey === key;
@@ -239,7 +257,7 @@ export default class SortableList extends Component {
           disabled={!sortingEnabled}
           style={style}
           location={location}
-          onLayout={!rowsLayouts ? this._onLayoutRow.bind(this, resolveLayout, key) : null}
+          onLayout={!rowsLayouts ? this._onLayoutRow.bind(this, key) : null}
           onActivate={this._onActivateRow.bind(this, key, index)}
           onPress={this._onPressRow.bind(this, key)}
           onRelease={this._onReleaseRow.bind(this, key)}
@@ -262,21 +280,16 @@ export default class SortableList extends Component {
     }
 
     const {footerLayout} = this.state;
-    let resolveLayout;
-
-    if (!footerLayout) {
-      this._footerLayout = new Promise((resolve) => (resolveLayout = resolve));
-    }
 
     return (
-      <View onLayout={!footerLayout ? this._onLayoutFooter.bind(this, resolveLayout) : null}>
+      <View onLayout={!footerLayout ? this._onLayoutFooter : null}>
         {this.props.renderFooter()}
       </View>
     );
   }
 
   _onUpdateLayouts() {
-    Promise.all([this._footerLayout, ...this._rowsLayouts])
+    Promise.all([this._footerLayout, ...Object.values(this._rowsLayouts)])
       .then(([footerLayout, ...rowsLayouts]) => {
         // Can get correct container’s layout only after rows’s layouts.
         this._container.measure((x, y, width, height, pageX, pageY) => {
@@ -515,13 +528,13 @@ export default class SortableList extends Component {
     this._autoScrollInterval = null;
   }
 
-  _onLayoutRow(resolveLayout, rowKey, {nativeEvent: {layout}}) {
-    resolveLayout({rowKey, layout});
+  _onLayoutRow(rowKey, {nativeEvent: {layout}}) {
+    this._resolveRowLayout[rowKey]({rowKey, layout});
   }
 
-  _onLayoutFooter(resolveLayout, {nativeEvent: {layout}}) {
-    resolveLayout(layout);
-  }
+  _onLayoutFooter = ({nativeEvent: {layout}}) => {
+    this._resolveFooterLayout(layout);
+  };
 
   _onActivateRow = (rowKey, index, e, gestureState, location) => {
     this._activeRowLocation = location;
