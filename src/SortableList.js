@@ -47,7 +47,7 @@ export default class SortableList extends Component {
   /**
    * Stores promises of rows’ layouts.
    */
-  _rowsLayouts = [];
+  _rowsLayouts = {};
   _resolveRowLayout = {};
 
   _contentOffset = {x: 0, y: 0};
@@ -289,7 +289,7 @@ export default class SortableList extends Component {
   }
 
   _onUpdateLayouts() {
-    Promise.all([this._footerLayout, ...this._rowsLayouts])
+    Promise.all([this._footerLayout, ...Object.values(this._rowsLayouts)])
       .then(([footerLayout, ...rowsLayouts]) => {
         // Can get correct container’s layout only after rows’s layouts.
         this._container.measure((x, y, width, height, pageX, pageY) => {
