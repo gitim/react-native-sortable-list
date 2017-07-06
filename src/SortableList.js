@@ -66,7 +66,7 @@ export default class SortableList extends Component {
   };
 
   componentWillMount() {
-    this.props.order.forEach((key) => {
+    this.state.order.forEach((key) => {
       this._rowsLayouts[key] = new Promise((resolve) => {
         this._resolveRowLayout[key] = resolve;
       });
