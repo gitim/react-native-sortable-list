@@ -85,7 +85,7 @@ export default class SortableList extends Component {
 
   componentWillReceiveProps(nextProps) {
     const {data, order} = this.state;
-    const {data: nextData, order: nextOrder} = nextProps;
+    let {data: nextData, order: nextOrder} = nextProps;
 
     if (data && nextData && !shallowEqual(data, nextData)) {
       nextOrder = nextOrder || Object.keys(nextData)
