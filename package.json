@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/gitim/react-native-sortable-list/issues"
   },
-  "homepage": "https://github.com/gitim/react-native-sortable-list"
+  "homepage": "https://github.com/gitim/react-native-sortable-list",
+  "dependencies": {
+    "prop-types": "^15.5.10"
+  }
 }
