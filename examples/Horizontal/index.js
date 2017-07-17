@@ -64,7 +64,7 @@ const data = {
   },
 };
 
-class Basic extends Component {
+class Horizontal extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -223,4 +223,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('Horizontal', () => Basic);
+AppRegistry.registerComponent('Horizontal', () => Horizontal);
