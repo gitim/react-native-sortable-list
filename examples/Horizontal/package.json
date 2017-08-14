@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "react": "16.0.0-alpha.12",
-    "react-native": "0.46.3",
-    "react-native-sortable-list": "file:../.."
+    "react-native": "0.47.1",
+    "react-native-sortable-list": "0.0.16"
   }
 }

@@ -65,6 +65,20 @@ const data = {
 };
 
 class Horizontal extends Component {
+  state = {data};
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState(({data}) => {
+        const nextData = {...data};
+
+        delete nextData[1];
+
+        return {data: nextData};
+      });
+    }, 3000);
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -73,7 +87,7 @@ class Horizontal extends Component {
           horizontal
           style={styles.list}
           contentContainerStyle={styles.contentContainer}
-          data={data}
+          data={this.state.data}
           renderRow={this._renderRow} />
       </View>
     );
