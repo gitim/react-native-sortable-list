@@ -19,8 +19,8 @@ export default class Row extends Component {
     // Will be called on long press.
     onActivate: PropTypes.func,
     onLayout: PropTypes.func,
+    onLongPress: PropTypes.func,
     onPress: PropTypes.func,
-
     // Will be called, when user (directly) move the view.
     onMove: PropTypes.func,
 
@@ -57,9 +57,11 @@ export default class Row extends Component {
     onPanResponderGrant: (e, gestureState) => {
       e.persist();
       this._wasLongPress = false;
+      this._wasPress = true;
 
       this._longPressTimer = setTimeout(() => {
         this._wasLongPress = true;
+        this._wasPress = false;
         this._target = e.nativeEvent.target;
         this._prevGestureState = {
           ...gestureState,
@@ -95,12 +97,17 @@ export default class Row extends Component {
     onPanResponderRelease: (e, gestureState) => {
       if (this._wasLongPress) {
         this._toggleActive(e, gestureState);
-
+      } else if (this._wasPress) {
+        this._cancelLongPress();
+        if(this.props.onPress) {
+          this.props.onPress();
+          this._wasPress = false;
+        }
       } else if (this._isTouchInsideElement(e)) {
         this._cancelLongPress();
 
-        if (this.props.onPress) {
-          this.props.onPress();
+        if (this.props.onLongPress) {
+          this.props.onLongPress();
         }
       }
     },
