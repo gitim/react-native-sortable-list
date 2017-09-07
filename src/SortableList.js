@@ -25,10 +25,9 @@ export default class SortableList extends Component {
     refreshControl: PropTypes.element,
     autoscrollAreaSize: PropTypes.number,
     rowActivationTime: PropTypes.number,
-
+    onPressRow: PropTypes.func,
     renderRow: PropTypes.func.isRequired,
     renderFooter: PropTypes.func,
-
     onChangeOrder: PropTypes.func,
     onActivateRow: PropTypes.func,
     onReleaseRow: PropTypes.func,
@@ -260,6 +259,7 @@ export default class SortableList extends Component {
           location={location}
           onLayout={!rowsLayouts ? this._onLayoutRow.bind(this, key) : null}
           onActivate={this._onActivateRow.bind(this, key, index)}
+          onLongPress={this._onLongPressRow.bind(this, key)}
           onPress={this._onPressRow.bind(this, key)}
           onRelease={this._onReleaseRow.bind(this, key)}
           onMove={this._onMoveRow}>
@@ -549,6 +549,12 @@ export default class SortableList extends Component {
 
     if (this.props.onActivateRow) {
       this.props.onActivateRow(rowKey);
+    }
+  };
+
+  _onLongPressRow = (rowKey) => {
+    if (this.props.onLongPressRow) {
+      this.props.onLongPressRow(rowKey);
     }
   };
 
