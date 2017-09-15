@@ -174,14 +174,11 @@ export default class SortableList extends Component {
     const {contentContainerStyle, horizontal, style} = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
-    const innerContainerStyle = [styles.rowsContainer];
+    const innerContainerStyle = [
+      styles.rowsContainer,
+      horizontal ? {width: contentWidth} : {height: contentHeight},
+    ];
     let {refreshControl} = this.props;
-
-    if (horizontal) {
-      innerContainerStyle.push({width: contentWidth});
-    } else {
-      innerContainerStyle.push({height: contentHeight});
-    }
 
     if (refreshControl && refreshControl.type === RefreshControl) {
       refreshControl = React.cloneElement(this.props.refreshControl, {
