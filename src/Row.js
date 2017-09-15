@@ -56,17 +56,17 @@ export default class Row extends Component {
 
     onPanResponderGrant: (e, gestureState) => {
       e.persist();
-      this._wasLongPress = false;
 
       this._longPressTimer = setTimeout(() => {
-        this._wasLongPress = true;
         this._target = e.nativeEvent.target;
         this._prevGestureState = {
           ...gestureState,
           moveX: gestureState.x0,
           moveY: gestureState.y0,
         };
-        this._toggleActive(e, gestureState);
+        if (!this._active) {
+          this._toggleActive(e, gestureState);
+        }
       }, this.props.activationTime);
     },
 
@@ -93,13 +93,13 @@ export default class Row extends Component {
     },
 
     onPanResponderRelease: (e, gestureState) => {
-      if (this._wasLongPress) {
+      if (this._active) {
         this._toggleActive(e, gestureState);
 
-      } else if (this._isTouchInsideElement(e)) {
+      } else {
         this._cancelLongPress();
 
-        if (this.props.onPress) {
+        if (this._isTouchInsideElement(e) && this.props.onPress) {
           this.props.onPress();
         }
       }
