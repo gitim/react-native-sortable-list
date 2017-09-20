@@ -25,6 +25,7 @@ export default class SortableList extends Component {
     refreshControl: PropTypes.element,
     autoscrollAreaSize: PropTypes.number,
     rowActivationTime: PropTypes.number,
+    manuallyActivateRows: PropTypes.bool,
 
     renderRow: PropTypes.func.isRequired,
     renderFooter: PropTypes.func,
@@ -38,6 +39,7 @@ export default class SortableList extends Component {
     sortingEnabled: true,
     scrollEnabled: true,
     autoscrollAreaSize: 60,
+    manuallyActivateRows: false
   }
 
   /**
@@ -248,7 +250,8 @@ export default class SortableList extends Component {
           onActivate={this._onActivateRow.bind(this, key, index)}
           onPress={this._onPressRow.bind(this, key)}
           onRelease={this._onReleaseRow.bind(this, key)}
-          onMove={this._onMoveRow}>
+          onMove={this._onMoveRow}
+          manuallyActivateRows={this.props.manuallyActivateRows}>
           {renderRow({
             key,
             data: data[key],

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, cloneElement} from 'react';
 import PropTypes from 'prop-types';
 import {Animated, PanResponder, StyleSheet} from 'react-native';
 import {shallowEqual} from './utils';
@@ -14,6 +14,7 @@ export default class Row extends Component {
       x: PropTypes.number,
       y: PropTypes.number,
     }),
+    manuallyActivateRows: PropTypes.bool,
     activationTime: PropTypes.number,
 
     // Will be called on long press.
@@ -55,19 +56,27 @@ export default class Row extends Component {
     },
 
     onPanResponderGrant: (e, gestureState) => {
-      e.persist();
-
-      this._longPressTimer = setTimeout(() => {
+      e.persist();        
+      if (!this.props.manuallyActivateRows) {
+        this._longPressTimer = setTimeout(() => {
+          this._target = e.nativeEvent.target;
+          this._prevGestureState = {
+            ...gestureState,
+            moveX: gestureState.x0,
+            moveY: gestureState.y0,
+          };
+          if (!this._active) {
+            this._toggleActive(e, gestureState);
+          }
+        }, this.props.activationTime);
+      } else {
         this._target = e.nativeEvent.target;
         this._prevGestureState = {
           ...gestureState,
           moveX: gestureState.x0,
           moveY: gestureState.y0,
         };
-        if (!this._active) {
-          this._toggleActive(e, gestureState);
-        }
-      }, this.props.activationTime);
+      }
     },
 
     onPanResponderMove: (e, gestureState) => {
@@ -164,7 +173,7 @@ export default class Row extends Component {
         {...this._panResponder.panHandlers}
         style={rowStyle}
         onLayout={this._onLayout}>
-        {children}
+        {this.props.manuallyActivateRows && children ? cloneElement(children, { toggleRowActive: this._toggleActive.bind(this) }) : children}
       </Animated.View>
     );
   }
