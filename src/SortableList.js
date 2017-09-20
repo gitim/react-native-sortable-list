@@ -87,8 +87,7 @@ export default class SortableList extends Component {
   componentWillReceiveProps(nextProps) {
     const {data, order} = this.state;
     let {data: nextData, order: nextOrder} = nextProps;
-
-    if (data && nextData && !shallowEqual(data, nextData)) {
+    if (data && nextData && Object.keys(data).toString() !== Object.keys(nextData).toString()) {
       nextOrder = nextOrder || Object.keys(nextData)
       uniqueRowKey.id++;
       this._rowsLayouts = {};
@@ -104,7 +103,8 @@ export default class SortableList extends Component {
         rowsLayouts: null,
         order: nextOrder
       });
-
+    } else if (data && nextData && !shallowEqual(data, nextData)) {
+      this.setState({ data: nextData });
     } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
       this.setState({order: nextOrder});
     }
