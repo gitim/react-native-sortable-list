@@ -153,12 +153,18 @@ export default class Row extends Component {
   }
 
   render() {
-    const {children, style} = this.props;
+    const {children, style, horizontal} = this.props;
+    const rowStyle = [
+      style,
+      styles.container,
+      this._animatedLocation.getLayout(),
+      horizontal ? {top: 0, bottom: 0} : {left: 0, right: 0}
+    ];
 
     return (
       <Animated.View
         {...this._panResponder.panHandlers}
-        style={[style, styles.container, this._animatedLocation.getLayout()]}
+        style={rowStyle}
         onLayout={this._onLayout}>
         {children}
       </Animated.View>
