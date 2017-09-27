@@ -156,7 +156,7 @@ export default class Row extends Component {
     const {children, style, horizontal} = this.props;
     const rowStyle = [
       style, styles.container, this._animatedLocation.getLayout(),
-      horizontal ? {top: 0, bottom: 0} : {left: 0, right: 0}
+      horizontal ? styles.horizontalContainer : styles.verticalContainer,
     ];
 
     return (
@@ -234,5 +234,13 @@ export default class Row extends Component {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
+  },
+  horizontalContainer: {
+    top: 0,
+    bottom: 0,
+  },
+  verticalContainer: {
+    left: 0,
+    right: 0,
   },
 });
