@@ -155,9 +155,7 @@ export default class Row extends Component {
   render() {
     const {children, style, horizontal} = this.props;
     const rowStyle = [
-      style,
-      styles.container,
-      this._animatedLocation.getLayout(),
+      style, styles.container, this._animatedLocation.getLayout(),
       horizontal ? {top: 0, bottom: 0} : {left: 0, right: 0}
     ];
 

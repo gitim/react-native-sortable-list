@@ -209,15 +209,6 @@ export default class SortableList extends Component {
     const {horizontal, rowActivationTime, sortingEnabled, renderRow} = this.props;
     const {animated, order, data, activeRowKey, releasedRowKey, rowsLayouts} = this.state;
 
-    let rowHeight = 0;
-    let rowWidth = 0;
-
-    if (rowsLayouts) {
-      Object.keys(rowsLayouts).forEach((key) => {
-        rowHeight = Math.max(rowHeight, rowsLayouts[key].height);
-        rowWidth = Math.max(rowWidth, rowsLayouts[key].width);
-      });
-    }
 
     let nextX = 0;
     let nextY = 0;
@@ -228,11 +219,9 @@ export default class SortableList extends Component {
 
       if (rowsLayouts) {
         if (horizontal) {
-          style.height = rowHeight;
           location.x = nextX;
           nextX += rowsLayouts[key].width;
         } else {
-          style.width = rowWidth;
           location.y = nextY;
           nextY += rowsLayouts[key].height;
         }
