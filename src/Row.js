@@ -153,12 +153,16 @@ export default class Row extends Component {
   }
 
   render() {
-    const {children, style} = this.props;
+    const {children, style, horizontal} = this.props;
+    const rowStyle = [
+      style, styles.container, this._animatedLocation.getLayout(),
+      horizontal ? styles.horizontalContainer : styles.verticalContainer,
+    ];
 
     return (
       <Animated.View
         {...this._panResponder.panHandlers}
-        style={[style, styles.container, this._animatedLocation.getLayout()]}
+        style={rowStyle}
         onLayout={this._onLayout}>
         {children}
       </Animated.View>
@@ -230,5 +234,13 @@ export default class Row extends Component {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
+  },
+  horizontalContainer: {
+    top: 0,
+    bottom: 0,
+  },
+  verticalContainer: {
+    left: 0,
+    right: 0,
   },
 });
