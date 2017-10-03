@@ -219,7 +219,7 @@ export default class SortableList extends Component {
       const style = {[ZINDEX]: 0};
       const location = {x: 0, y: 0};
 
-      if (rowsLayouts) {
+      if (rowsLayouts && rowsLayouts[key]) {
         if (horizontal) {
           location.x = nextX;
           nextX += rowsLayouts[key].width;
