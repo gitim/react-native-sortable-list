@@ -56,27 +56,22 @@ export default class Row extends Component {
     },
 
     onPanResponderGrant: (e, gestureState) => {
-      e.persist();        
-      if (!this.props.manuallyActivateRows) {
-        this._longPressTimer = setTimeout(() => {
-          this._target = e.nativeEvent.target;
-          this._prevGestureState = {
-            ...gestureState,
-            moveX: gestureState.x0,
-            moveY: gestureState.y0,
-          };
-          if (!this._active) {
-            this._toggleActive(e, gestureState);
-          }
-        }, this.props.activationTime);
-      } else {
-        this._target = e.nativeEvent.target;
-        this._prevGestureState = {
-          ...gestureState,
-          moveX: gestureState.x0,
-          moveY: gestureState.y0,
-        };
-      }
+      e.persist();
+
+      this._target = e.nativeEvent.target;
+      this._prevGestureState = {
+        ...gestureState,
+        moveX: gestureState.x0,
+        moveY: gestureState.y0,
+      };
+
+      if (this.props.manuallyActivateRows) return;
+
+      this._longPressTimer = setTimeout(() => {
+        if (this._active) return;
+
+        this._toggleActive(e, gestureState);
+      }, this.props.activationTime);
     },
 
     onPanResponderMove: (e, gestureState) => {
@@ -173,7 +168,12 @@ export default class Row extends Component {
         {...this._panResponder.panHandlers}
         style={rowStyle}
         onLayout={this._onLayout}>
-        {this.props.manuallyActivateRows && children ? cloneElement(children, { toggleRowActive: this._toggleActive.bind(this) }) : children}
+        {this.props.manuallyActivateRows && children
+          ? cloneElement(children, {
+            toggleRowActive: this._toggleActive,
+          })
+          : children
+        }
       </Animated.View>
     );
   }
@@ -198,7 +198,7 @@ export default class Row extends Component {
     }
   }
 
-  _toggleActive(e, gestureState) {
+  _toggleActive = (e, gestureState) => {
     const callback = this._active ? this.props.onRelease : this.props.onActivate;
 
     this._active = !this._active;
@@ -206,7 +206,7 @@ export default class Row extends Component {
     if (callback) {
       callback(e, gestureState, this._location);
     }
-  }
+  };
 
   _mapGestureToMove(prevGestureState, gestureState) {
     return this.props.horizontal
