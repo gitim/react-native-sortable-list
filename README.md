@@ -1,5 +1,8 @@
 ## Sortable list view for react-native
 
+![GitHub license](https://img.shields.io/badge/license-MIT-green.svg)
+[![npm](https://img.shields.io/npm/v/react-native-sortable-list.svg?style=flat)](https://npmjs.com/package/react-native-sortable-list)
+
 ### Content
 - [Demo](#demo)
 - [Installation](#installation)
