@@ -27,6 +27,7 @@ export default class SortableList extends Component {
     showsHorizontalScrollIndicator: PropTypes.bool,
     refreshControl: PropTypes.element,
     autoscrollAreaSize: PropTypes.number,
+    snapToAlignment: PropTypes.string,
     rowActivationTime: PropTypes.number,
     manuallyActivateRows: PropTypes.bool,
 
@@ -44,6 +45,7 @@ export default class SortableList extends Component {
     sortingEnabled: true,
     scrollEnabled: true,
     autoscrollAreaSize: 60,
+    snapToAlignment: 'start',
     manuallyActivateRows: false,
     showsVerticalScrollIndicator: true,
     showsHorizontalScrollIndicator: true,
@@ -194,7 +196,7 @@ export default class SortableList extends Component {
   }
 
   render() {
-    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator} = this.props;
+    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator, snapToAlignment} = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
     innerContainerStyle = [
@@ -221,7 +223,9 @@ export default class SortableList extends Component {
           scrollEnabled={scrollEnabled}
           showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-          onScroll={this._onScroll}>
+          snapToAlignment={snapToAlignment}
+          onScroll={this._onScroll}
+        >
           {this._renderHeader()}
           <View style={innerContainerStyle}>
             {this._renderRows()}
