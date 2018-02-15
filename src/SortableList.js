@@ -136,11 +136,14 @@ export default class SortableList extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const {data} = this.state;
+    const {data, scrollEnabled} = this.state;
     const {data: prevData} = prevState;
 
     if (data && prevData && !shallowEqual(data, prevData)) {
       this._onUpdateLayouts();
+    }
+    if (prevProps.scrollEnabled !== scrollEnabled) {
+      this.setState({scrollEnabled: prevProps.scrollEnabled})
     }
   }
 
