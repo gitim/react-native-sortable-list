@@ -37,6 +37,7 @@ export default class SortableList extends Component {
     onChangeOrder: PropTypes.func,
     onActivateRow: PropTypes.func,
     onReleaseRow: PropTypes.func,
+    onScroll: PropTypes.func,
   };
 
   static defaultProps = {
@@ -45,7 +46,8 @@ export default class SortableList extends Component {
     autoscrollAreaSize: 60,
     manuallyActivateRows: false,
     showsVerticalScrollIndicator: true,
-    showsHorizontalScrollIndicator: true
+    showsHorizontalScrollIndicator: true,
+    onScroll: () => {}
   }
 
   /**
@@ -621,8 +623,9 @@ export default class SortableList extends Component {
     }
   };
 
-  _onScroll = ({nativeEvent: {contentOffset}}) => {
-      this._contentOffset = contentOffset;
+  _onScroll = (e) => {
+      this._contentOffset = e.nativeEvent.contentOffset;
+      this.props.onScroll(e)
   };
 
   _onRefContainer = (component) => {
