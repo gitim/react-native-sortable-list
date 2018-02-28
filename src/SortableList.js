@@ -224,10 +224,10 @@ export default class SortableList extends Component {
       if (rowsLayouts) {
         if (horizontal) {
           location.x = nextX;
-          nextX += rowsLayouts[key].width;
+          nextX += rowsLayouts[key] ? rowsLayouts[key].width : 0;
         } else {
           location.y = nextY;
-          nextY += rowsLayouts[key].height;
+          nextY += rowsLayouts[key] ? rowsLayouts[key].height : 0;
         }
       }
 
