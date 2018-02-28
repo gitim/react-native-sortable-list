@@ -184,7 +184,7 @@ export default class SortableList extends Component {
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
     const innerContainerStyle = [
       styles.rowsContainer,
-      horizontal ? {width: contentWidth} : {height: contentHeight}
+      horizontal ? {width: contentWidth} : {height: contentHeight},
     ];
     let {refreshControl} = this.props;
 
