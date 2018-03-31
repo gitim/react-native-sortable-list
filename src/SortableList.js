@@ -178,6 +178,10 @@ export default class SortableList extends Component {
       this._scroll(animated);
     }
   }
+  
+  getCurrentOrder() {
+    return this.state.order;
+  }
 
   render() {
     let {contentContainerStyle, innerContainerStyle, horizontal, style} = this.props;

@@ -64,6 +64,30 @@ Called when a row was pressed.
 - **scrollBy(dy?, animated?)** scrolls by a given y offset, either immediately or with a smooth animation
 - **scrollTo(y?, animated?)** scrolls to a given y offset, either immediately or with a smooth animation
 - **scrollToRowKey(key, animated?)** scrolls to a given row key, either immediately or with a smooth animation
+- **getCurrentOrder()** returns the current order of the list as an array of keys. Call this with a ref to save the
+current order of the list from a higher level component
+
+```reactjs
+class ExampleComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.sortableListRef = null;
+    this.setSortableListRef = element => {
+      this.sortableListRef = element;
+    }
+  }
+
+  render() {
+    return (
+      <SortableList
+        data={someDataArray}
+        ref={this.setSortableListRef}
+        onReleaseRow{() => someOrderSaveFunction(this.sortableListRef.getCurrentOrder()) }
+      />
+    );
+  }
+}
+```
 
 ### Questions?
 Feel free to contact me via
