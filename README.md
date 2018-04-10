@@ -31,6 +31,8 @@ npm i react-native-sortable-list --save
 - **contentContainerStyle?** (Object, Array) these styles will be applied to the inner scroll view content container
 - **innerContainerStyle?** (Object, Array) these styles will be applied to the inner scroll view content container, excluding the header and footer
 - **horizontal?** (boolean) when true, the SortableList's children are arranged horizontally in a row instead of vertically in a column. The default value is false.
+- **showsVerticalScrollIndicator** (boolean) when false, the vertical scroll indicator will not be visible. The default value is true.
+- **showsHorizontalScrollIndicator** (boolean) when false, the horizontal scroll indicator will not be visible. The default value is true.
 - **sortingEnabled?** (boolean) when false, rows are not sortable. The default value is true.
 - **scrollEnabled?** (boolean) when false, the content does not scrollable. The default value is true.
 - **manuallyActivateRows?** (bool) whether you intend to use the `toggleRowActive` method to activate a row or use the out of box solution.
