@@ -29,6 +29,7 @@ npm i react-native-sortable-list --save
 - **order?** (Array) an array of keys from data, the order of keys from the array will be used to initial rows order
 - **style?** (Object, Array)
 - **contentContainerStyle?** (Object, Array) these styles will be applied to the inner scroll view content container
+- **innerContainerStyle?** (Object, Array) these styles will be applied to the inner scroll view content container, excluding the header and footer
 - **horizontal?** (boolean) when true, the SortableList's children are arranged horizontally in a row instead of vertically in a column. The default value is false.
 - **sortingEnabled?** (boolean) when false, rows are not sortable. The default value is true.
 - **scrollEnabled?** (boolean) when false, the content does not scrollable. The default value is true.
@@ -40,6 +41,9 @@ A RefreshControl that works the same way as a ScrollView's refreshControl.
 - **renderRow** (function)<br />
 `({key, index, data, disabled, active}) => renderable`<br />
 Takes a row key, row index, data entry from the data source and its statuses disabled, active and should return a renderable component to be rendered as the row. The child component will receive a method called `toggleRowActive` (only if `manuallyActivateRows={true}`) to manually activate the row. Useful if you have multiple touch responders in your view.<br />
+- **renderHeader?** (function)<br />
+`() => renderable`<br />
+Renders returned component at the top of the list.
 - **renderFooter?** (function)<br />
 `() => renderable`<br />
 Renders returned component at the bottom of the list.
