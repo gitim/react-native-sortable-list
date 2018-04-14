@@ -23,6 +23,8 @@ export default class SortableList extends Component {
     sortingEnabled: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
     horizontal: PropTypes.bool,
+    showsVerticalScrollIndicator: PropTypes.bool,
+    showsHorizontalScrollIndicator: PropTypes.bool,
     refreshControl: PropTypes.element,
     autoscrollAreaSize: PropTypes.number,
     rowActivationTime: PropTypes.number,
@@ -41,7 +43,9 @@ export default class SortableList extends Component {
     sortingEnabled: true,
     scrollEnabled: true,
     autoscrollAreaSize: 60,
-    manuallyActivateRows: false
+    manuallyActivateRows: false,
+    showsVerticalScrollIndicator: true,
+    showsHorizontalScrollIndicator: true
   }
 
   /**
@@ -180,7 +184,7 @@ export default class SortableList extends Component {
   }
 
   render() {
-    let {contentContainerStyle, innerContainerStyle, horizontal, style} = this.props;
+    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator} = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
     innerContainerStyle = [
@@ -205,6 +209,8 @@ export default class SortableList extends Component {
           contentContainerStyle={contentContainerStyle}
           scrollEventThrottle={2}
           scrollEnabled={scrollEnabled}
+          showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
+          showsVerticalScrollIndicator={showsVerticalScrollIndicator}
           onScroll={this._onScroll}>
           {this._renderHeader()}
           <View style={innerContainerStyle}>
