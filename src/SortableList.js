@@ -591,7 +591,7 @@ export default class SortableList extends Component {
     }));
 
     if (this.props.onReleaseRow) {
-      this.props.onReleaseRow(rowKey);
+      this.props.onReleaseRow(rowKey, this.state.order);
     }
   };
 
