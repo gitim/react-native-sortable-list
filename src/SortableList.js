@@ -20,8 +20,8 @@ export default class SortableList extends Component {
     style: ViewPropTypes.style,
     contentContainerStyle: ViewPropTypes.style,
     innerContainerStyle: ViewPropTypes.style,
-    draggableScreenHeight: PropTypes.number,
-    draggableScreenWidth: PropTypes.number,
+    itemViewHeight: PropTypes.number,
+    itemViewWidth: PropTypes.number,
     sortingEnabled: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
     horizontal: PropTypes.bool,
@@ -45,8 +45,8 @@ export default class SortableList extends Component {
     sortingEnabled: true,
     scrollEnabled: true,
     autoscrollAreaSize: 60,
-    draggableScreenHeight: 0,
-    draggableScreenWidth: 0,
+    itemViewHeight: 0,
+    itemViewWidth: 0,
     manuallyActivateRows: false,
     showsVerticalScrollIndicator: true,
     showsHorizontalScrollIndicator: true
@@ -188,12 +188,12 @@ export default class SortableList extends Component {
   }
 
   render() {
-    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator, draggableScreenHeight, draggableScreenWidth} = this.props;
+    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator, itemViewHeight, itemViewWidth} = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
     innerContainerStyle = [
       styles.rowsContainer,
-      horizontal ? {width: Math.max(contentWidth, draggableScreenWidth)} : {height: Math.max(contentHeight, draggableScreenHeight)},
+      horizontal ? {width: Math.max(contentWidth, itemViewWidth)} : {height: Math.max(contentHeight, itemViewHeight)},
       innerContainerStyle
     ];
     let {refreshControl} = this.props;
