@@ -142,12 +142,10 @@ export default class SortableList extends Component {
     this._scroll(animated);
   }
 
-  scrollTo({ x = 0, y = 1251520555, animated = false }) {
+  scrollTo({ x = 0, y = 0, animated = false }) {
     if (this.props.horizontal) {
-      console.log("H scrolled ok");
       this._contentOffset.x = x;
     } else {
-      console.log("Y scrolled ok");
       this._contentOffset.y = y;
     }
 
@@ -333,8 +331,9 @@ export default class SortableList extends Component {
             contentWidth,
           }, () => {
             this.setState({ animated: true });
-            this.scrollToRowKey({ key: this.state.data.length, animated: true });
-            //this._scroll(true);
+            setTimeout(() => {
+              this.scrollToRowKey({ key: this.state.data.length - 1, animated: true });
+            }, 100);
           });
         });
       });
