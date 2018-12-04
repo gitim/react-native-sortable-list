@@ -163,8 +163,10 @@ export default class SortableList extends Component {
         break;
       }
 
-      keyX += rowsLayouts[rowKey].width;
-      keyY += rowsLayouts[rowKey].height;
+      if (rowsLayouts[rowKey] !== null) {
+        keyX += rowsLayouts[rowKey].width;
+        keyY += rowsLayouts[rowKey].height;
+      }
     }
 
     // Scroll if the row is not visible.
@@ -338,9 +340,10 @@ export default class SortableList extends Component {
 
   scrollToBottom = () => {
     setTimeout(() => {
-      if (this.state.data.length > 0) {
-        this.scrollToRowKey({ key: this.state.data.length, animated: true });
-      }
+      this.scrollBy({ dy: 60, animated: true });
+      /*if (this.props.data.length - 1 > 0) {
+        this.scrollToRowKey({ key: 7, animated: true });
+    }*/
     }, 100);
   }
 
