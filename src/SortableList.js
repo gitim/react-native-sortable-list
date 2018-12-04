@@ -339,7 +339,7 @@ export default class SortableList extends Component {
   scrollToBottom = () => {
     setTimeout(() => {
       if (this.state.data.length > 0) {
-        this.scrollToRowKey({ key: this.state.data.length - 1, animated: true });
+        this.scrollToRowKey({ key: this.state.data.length, animated: true });
       }
     }, 100);
   }
