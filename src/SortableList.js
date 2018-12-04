@@ -331,14 +331,17 @@ export default class SortableList extends Component {
             contentWidth,
           }, () => {
             this.setState({ animated: true });
-            setTimeout(() => {
-              if (this.state.data.length > 0) {
-                this.scrollToRowKey({ key: this.state.data.length - 1, animated: true });
-              }
-            }, 100);
           });
         });
       });
+  }
+
+  scrollToBottom = () => {
+    setTimeout(() => {
+      if (this.state.data.length > 0) {
+        this.scrollToRowKey({ key: this.state.data.length - 1, animated: true });
+      }
+    }, 100);
   }
 
   _scroll(animated) {
