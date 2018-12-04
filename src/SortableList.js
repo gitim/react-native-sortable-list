@@ -224,7 +224,7 @@ export default class SortableList extends Component {
 					refreshControl={refreshControl}
 					ref={this._onRefScrollView}
 					horizontal={horizontal}
-					style={{ flex: 1 }}
+					style={this.props.scrollViewStyle}
 					contentContainerStyle={contentContainerStyle}
 					scrollEventThrottle={2}
 					scrollEnabled={scrollEnabled}
