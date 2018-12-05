@@ -110,13 +110,23 @@ export default class SortableList extends Component {
           this._resolveRowLayout[key] = resolve;
         });
       });
-      this.setState({
-        animated: false,
-        data: nextData,
-        containerLayout: null,
-        rowsLayouts: null,
-        order: nextOrder
-      });
+      if (nextData.length > data.length) {
+        this.setState({
+          animated: false,
+          data: nextData,
+          containerLayout: null,
+          rowsLayouts: null,
+          order: nextOrder
+        });
+      } else {
+        this.setState({
+          // animated: false,
+          data: nextData,
+          // containerLayout: null,
+          // rowsLayouts: null,
+          order: nextOrder
+        });
+      }
 
     } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
       this.setState({ order: nextOrder });
