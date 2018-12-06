@@ -115,7 +115,7 @@ export default class SortableList extends Component {
           animated: false,
           data: nextData,
           containerLayout: null,
-          rowsLayouts: null,
+          // rowsLayouts: null,
           order: nextOrder
         });
       } else {
@@ -198,7 +198,7 @@ export default class SortableList extends Component {
   render() {
     let { contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator } = this.props;
     const { animated, contentHeight, contentWidth, scrollEnabled } = this.state;
-    const containerStyle = StyleSheet.flatten([style, { opacity: Number(animated) }])
+    const containerStyle = StyleSheet.flatten([style])
     innerContainerStyle = [
       styles.rowsContainer,
       horizontal ? { width: contentWidth } : { height: contentHeight },
