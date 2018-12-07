@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+imimport React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {ScrollView, View, StyleSheet, Platform, RefreshControl, ViewPropTypes} from 'react-native';
 import {shallowEqual, swapArrayElements} from './utils';
@@ -110,13 +110,23 @@ export default class SortableList extends Component {
           this._resolveRowLayout[key] = resolve;
         });
       });
+      if (nextData.length > data.length) {
       this.setState({
-        animated: false,
-        data: nextData,
-        containerLayout: null,
-        rowsLayouts: null,
-        order: nextOrder
+      animated: false,
+      data: nextData,
+      containerLayout: null,
+      rowsLayouts: null,
+      order: nextOrder
       });
+      } else {
+      this.setState({
+      // animated: false,
+      data: nextData,
+      // containerLayout: null,
+      // rowsLayouts: null,
+      order: nextOrder
+      });
+      }
 
     } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
       this.setState({order: nextOrder});
