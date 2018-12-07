@@ -41,6 +41,11 @@ export default class Row extends Component {
     this._location = props.location;
 
     this._animatedLocation.addListener(this._onChangeLocation);
+    // this.animations = {
+    //     deleteFadeOut: new Animated.Value(1),
+    //     timeFadeIn: new Animated.Value(0),
+    //     timeFadeOut: new Animated.Value(1),
+    // }
   }
 
   _panResponder = PanResponder.create({
@@ -64,6 +69,13 @@ export default class Row extends Component {
 
     onPanResponderGrant: (e, gestureState) => {
       e.persist();
+
+        // Animated.timing(this.animations.timeFadeOut, {
+        //     toValue: 0.1,
+        //     duration: 300,
+        //     delay: 0,
+        //     useNativeDriver: true
+        // }).start();
 
       this._target = e.nativeEvent.target;
       this._prevGestureState = {
@@ -104,6 +116,12 @@ export default class Row extends Component {
     },
 
     onPanResponderRelease: (e, gestureState) => {
+        // Animated.timing(this.animations.timeFadeOut, {
+        //     toValue: 1,
+        //     duration: 150,
+        //     delay: 0,
+        //     useNativeDriver: true
+        // }).start();
       if (this._active) {
         this._toggleActive(e, gestureState);
 

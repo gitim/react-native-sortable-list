@@ -98,8 +98,8 @@ export default class SortableList extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { data, order } = this.state;
-    let { data: nextData, order: nextOrder } = nextProps;
+    const {data, order} = this.state;
+    let {data: nextData, order: nextOrder} = nextProps;
 
     if (data && nextData && !shallowEqual(data, nextData)) {
       nextOrder = nextOrder || Object.keys(nextData)
@@ -110,28 +110,16 @@ export default class SortableList extends Component {
           this._resolveRowLayout[key] = resolve;
         });
       });
-      if (nextData.length > data.length) {
-        this.setState({
-          animated: false,
-          data: nextData,
-          containerLayout: null,
-          // rowsLayouts: null,
-          order: nextOrder
-        });
-      } else {
-        this.setState({
-          // animated: false,
-          data: nextData,
-          // containerLayout: null,
-          // rowsLayouts: null,
-          order: nextOrder
-        });
-      }
+      this.setState({
+        data: nextData,
+        order: nextOrder
+      });
 
     } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
-      this.setState({ order: nextOrder });
+      this.setState({order: nextOrder});
     }
   }
+
 
   componentDidUpdate(prevProps, prevState) {
     const { data } = this.state;
@@ -273,7 +261,7 @@ export default class SortableList extends Component {
           disabled={!sortingEnabled}
           style={style}
           location={location}
-          onLayout={!rowsLayouts ? this._onLayoutRow.bind(this, key) : null}
+          onLayout={this._onLayoutRow.bind(this, key)}
           onActivate={this._onActivateRow.bind(this, key, index)}
           onPress={this._onPressRow.bind(this, key)}
           onRelease={this._onReleaseRow.bind(this, key)}
@@ -598,7 +586,7 @@ export default class SortableList extends Component {
 
   _onPressRow = (rowKey) => {
     if (this.props.onPressRow) {
-      this.props.onPressRow(rowKey);
+        this.props.onPressRow(rowKey);
     }
   };
 
@@ -612,7 +600,7 @@ export default class SortableList extends Component {
     }));
 
     if (this.props.onReleaseRow) {
-      this.props.onReleaseRow(rowKey);
+        this.props.onReleaseRow(rowKey, this.state.order);
     }
   };
 
