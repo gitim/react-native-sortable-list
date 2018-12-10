@@ -98,11 +98,44 @@ export default class SortableList extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {data, order} = this.state;
-    let {data: nextData, order: nextOrder} = nextProps;
-
+    const { data, order } = this.state;
+    let { data: nextData, order: nextOrder } = nextProps;
     if (data && nextData && !shallowEqual(data, nextData)) {
       nextOrder = nextOrder || Object.keys(nextData)
+      //nextData = this.state.data.filter((_, i) => i !== null || i !== undefined);
+      for (let i = 0; i < nextOrder.length; i++) {
+        console.log(JSON.stringify(nextData[nextOrder[i]]));
+        if (!nextData[nextOrder[i]]) {
+          nextOrder.splice(i, 1);
+          console.log("REMOVIDO");
+          this.props.onChangeOrder(nextOrder);
+        }
+      }
+
+      for (let i = 0; i < nextData.length; i++) {
+        if (!nextData[i]) {
+          nextData.splice(i, 1);
+        }
+      }
+
+      if (nextData > data) {
+        console.log("sou amior");
+        nextOrder.push(nextOrder.length);
+        this.props.onChangeOrder(nextOrder);
+
+        if (nextOrder.length === 0) {
+          this.props.onChangeOrder(nextOrder);
+          console.log(nextOrder);
+        }
+      }
+      console.log(JSON.stringify(nextData));
+      console.log(JSON.stringify(data));
+      for (let i = 0; i < order; i++) {
+        if (nextOrder[i] === null) {
+          nextOrder.splice(i, 1);
+          this.props.onChangeOrder(nextOrder);
+        }
+      }
       uniqueRowKey.id++;
       this._rowsLayouts = {};
       nextOrder.forEach((key) => {
@@ -113,10 +146,14 @@ export default class SortableList extends Component {
       this.setState({
         data: nextData,
         order: nextOrder
+      }, () => {
+        for (let i = 0; i < nextOrder.length; i++) {
+          nextOrder[i] = i;
+        }
       });
 
     } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
-      this.setState({order: nextOrder});
+      this.setState({ order: nextOrder });
     }
   }
 
@@ -339,9 +376,6 @@ export default class SortableList extends Component {
   scrollToBottom = () => {
     setTimeout(() => {
       this.scrollBy({ dy: 60, animated: true });
-      /*if (this.props.data.length - 1 > 0) {
-        this.scrollToRowKey({ key: 7, animated: true });
-    }*/
     }, 100);
   }
 
@@ -586,7 +620,7 @@ export default class SortableList extends Component {
 
   _onPressRow = (rowKey) => {
     if (this.props.onPressRow) {
-        this.props.onPressRow(rowKey);
+      this.props.onPressRow(rowKey);
     }
   };
 
@@ -600,7 +634,7 @@ export default class SortableList extends Component {
     }));
 
     if (this.props.onReleaseRow) {
-        this.props.onReleaseRow(rowKey, this.state.order);
+      this.props.onReleaseRow(rowKey, this.state.order);
     }
   };
 
