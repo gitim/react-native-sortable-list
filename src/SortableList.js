@@ -104,8 +104,14 @@ export default class SortableList extends Component {
     if (data && nextData && !shallowEqual(data, nextData)) {
       nextOrder = nextOrder || Object.keys(nextData)
       for (let i = 0; i < nextOrder.length; i++) {
-        if (!nextData[nextOrder[i]] || !nextData[i]) {
+        if (!nextData[nextOrder[i]]) {
           nextOrder.splice(i, 1);
+        }
+      }
+
+      for (let i = 0; i < nextOrder.length; i++) {
+        if ( !nextData[i]) {
+          nextData.splice(i, 1);
         }
       }
 
@@ -410,6 +416,7 @@ export default class SortableList extends Component {
         activeRowIndex: rowUnderActiveIndex,
       }, () => {
         if (this.props.onChangeOrder) {
+          console.log(`next order ${nextOrder}`);
           this.props.onChangeOrder(nextOrder);
         }
       });
