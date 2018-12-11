@@ -34,6 +34,7 @@ export default class SortableList extends Component {
     renderHeader: PropTypes.func,
     renderFooter: PropTypes.func,
 
+    onUpdateCards: PropTypes.func,
     onChangeOrder: PropTypes.func,
     onActivateRow: PropTypes.func,
     onReleaseRow: PropTypes.func,
@@ -102,37 +103,17 @@ export default class SortableList extends Component {
     let { data: nextData, order: nextOrder } = nextProps;
     if (data && nextData && !shallowEqual(data, nextData)) {
       nextOrder = nextOrder || Object.keys(nextData)
-      //nextData = this.state.data.filter((_, i) => i !== null || i !== undefined);
       for (let i = 0; i < nextOrder.length; i++) {
-        console.log(JSON.stringify(nextData[nextOrder[i]]));
-        if (!nextData[nextOrder[i]]) {
+        if (!nextData[nextOrder[i]] || !nextData[i]) {
           nextOrder.splice(i, 1);
-          console.log("REMOVIDO");
-          this.props.onChangeOrder(nextOrder);
-        }
-      }
-
-      for (let i = 0; i < nextData.length; i++) {
-        if (!nextData[i]) {
-          nextData.splice(i, 1);
         }
       }
 
       if (nextData > data) {
-        console.log("sou amior");
         nextOrder.push(nextOrder.length);
         this.props.onChangeOrder(nextOrder);
 
         if (nextOrder.length === 0) {
-          this.props.onChangeOrder(nextOrder);
-          console.log(nextOrder);
-        }
-      }
-      console.log(JSON.stringify(nextData));
-      console.log(JSON.stringify(data));
-      for (let i = 0; i < order; i++) {
-        if (nextOrder[i] === null) {
-          nextOrder.splice(i, 1);
           this.props.onChangeOrder(nextOrder);
         }
       }
@@ -147,9 +128,15 @@ export default class SortableList extends Component {
         data: nextData,
         order: nextOrder
       }, () => {
+        let newData = [];
         for (let i = 0; i < nextOrder.length; i++) {
+          newData[i] = nextData[nextOrder[i]];
           nextOrder[i] = i;
         }
+        this.setState({ data: newData }, () => {
+          this.props.onChangeOrder(nextOrder);
+          this.props.onUpdateCards(nextData, nextOrder);
+        });
       });
 
     } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
@@ -417,7 +404,7 @@ export default class SortableList extends Component {
         nextOrder.splice(activeRowIndex, 1);
         nextOrder.splice(rowUnderActiveIndex, 0, activeRowKey);
       }
-
+      
       this.setState({
         order: nextOrder,
         activeRowIndex: rowUnderActiveIndex,
@@ -634,6 +621,14 @@ export default class SortableList extends Component {
     }));
 
     if (this.props.onReleaseRow) {
+      let nextOrder = []
+      for (let i = 0; i < this.state.order.length; i++) {
+        nextOrder[i] = i;
+      }
+
+        this.props.onChangeOrder(nextOrder);
+        this.props.onUpdateCards(this.state.data, this.state.order);
+
       this.props.onReleaseRow(rowKey, this.state.order);
     }
   };
