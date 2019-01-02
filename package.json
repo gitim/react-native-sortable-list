@@ -3,6 +3,9 @@
   "version": "0.0.23",
   "description": "React Native Sortable List component",
   "main": "index.js",
+  "scripts": {
+    "release": "node scripts/release.js"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.hy-vee.cloud:rebel-scrum/react-native-sortable-list.git"
@@ -16,5 +19,12 @@
   "license": "MIT",
   "dependencies": {
     "prop-types": "^15.5.10"
+  },
+  "devDependencies": {
+    "execa": "0.10.0",
+    "git-url-parse": "10.0.1",
+    "listr": "0.14.2",
+    "rimraf": "2.6.2",
+    "semver": "5.5.1"
   }
 }
