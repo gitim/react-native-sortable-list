@@ -201,7 +201,7 @@ export default class SortableList extends Component {
     }
 
     return (
-      <View style={containerStyle} ref={this._onRefContainer}>
+      <View style={containerStyle} ref={this._onRefContainer} onLayout={this._onContainerLayout}>
         <ScrollView
           refreshControl={refreshControl}
           ref={this._onRefScrollView}
@@ -445,10 +445,10 @@ export default class SortableList extends Component {
 
     if (horizontal) {
       inAutoScrollBeginArea = pageX < containerLayout.pageX + this.props.autoscrollAreaSize;
-      inAutoScrollEndArea = pageX > containerLayout.pageX + containerLayout.width - this.props.autoscrollAreaSize;
+      inAutoScrollEndArea = pageX > containerLayout.pageX + this.containerLayout.width - this.props.autoscrollAreaSize;
     } else {
       inAutoScrollBeginArea = pageY < containerLayout.pageY + this.props.autoscrollAreaSize;
-      inAutoScrollEndArea = pageY > containerLayout.pageY + containerLayout.height - this.props.autoscrollAreaSize;
+      inAutoScrollEndArea = pageY > containerLayout.pageY + this.containerLayout.height - this.props.autoscrollAreaSize;
     }
 
     if (!inAutoScrollBeginArea &&
@@ -486,9 +486,9 @@ export default class SortableList extends Component {
           } = this.state;
 
           if (horizontal) {
-            return this._contentOffset.x < contentWidth - containerLayout.width
+            return this._contentOffset.x < contentWidth - this.containerLayout.width
           } else {
-            return this._contentOffset.y < contentHeight + footerLayout.height - containerLayout.height;
+            return this._contentOffset.y < contentHeight + footerLayout.height - this.containerLayout.height;
           }
         },
         getScrollStep: (stepIndex) => {
@@ -628,6 +628,10 @@ export default class SortableList extends Component {
   _onRefRow = (rowKey, component) => {
     this._rows[rowKey] = component;
   };
+
+  _onContainerLayout = ({ nativeEvent: { layout }}) => {
+    this.containerLayout = layout;
+  }
 }
 
 const styles = StyleSheet.create({
