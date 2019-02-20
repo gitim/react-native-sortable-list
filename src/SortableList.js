@@ -258,7 +258,6 @@ export default class SortableList extends Component {
           horizontal={horizontal}
           activationTime={rowActivationTime}
           animated={animated && !active}
-          disabled={!sortingEnabled}
           style={style}
           location={location}
           onLayout={!rowsLayouts ? this._onLayoutRow.bind(this, key) : null}
