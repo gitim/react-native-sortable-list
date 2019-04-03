@@ -444,7 +444,7 @@ export default class SortableList extends Component {
     let inAutoScrollEndArea = false;
 
     if (horizontal) {
-      inAutoScrollBeginArea = pageX < containerLayout.pageX + this.props.autoscrollAreaSize;
+      inAutoScrollBeginArea = pageX < this.props.autoscrollAreaSize;
       inAutoScrollEndArea = pageX > containerLayout.pageX + containerLayout.width - this.props.autoscrollAreaSize;
     } else {
       inAutoScrollBeginArea = pageY < containerLayout.pageY + this.props.autoscrollAreaSize;
