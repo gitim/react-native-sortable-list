@@ -29,6 +29,7 @@ export default class SortableList extends Component {
     autoscrollAreaSize: PropTypes.number,
     rowActivationTime: PropTypes.number,
     manuallyActivateRows: PropTypes.bool,
+    keyboardShouldPersistTaps: PropTypes.oneOf(['never', 'always', 'handled']),
 
     renderRow: PropTypes.func.isRequired,
     renderHeader: PropTypes.func,
@@ -42,6 +43,7 @@ export default class SortableList extends Component {
   static defaultProps = {
     sortingEnabled: true,
     scrollEnabled: true,
+    keyboardShouldPersistTaps: 'never',
     autoscrollAreaSize: 60,
     manuallyActivateRows: false,
     showsVerticalScrollIndicator: true,
@@ -184,7 +186,7 @@ export default class SortableList extends Component {
   }
 
   render() {
-    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator} = this.props;
+    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator, keyboardShouldPersistTaps} = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
     innerContainerStyle = [
@@ -209,6 +211,7 @@ export default class SortableList extends Component {
           contentContainerStyle={contentContainerStyle}
           scrollEventThrottle={2}
           scrollEnabled={scrollEnabled}
+          keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
           onScroll={this._onScroll}>
