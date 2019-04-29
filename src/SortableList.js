@@ -29,6 +29,7 @@ export default class SortableList extends Component {
     autoscrollAreaSize: PropTypes.number,
     rowActivationTime: PropTypes.number,
     manuallyActivateRows: PropTypes.bool,
+    keyboardShouldPersistTaps: PropTypes.oneOf(['never', 'always', 'handled']),
 
     renderRow: PropTypes.func.isRequired,
     renderHeader: PropTypes.func,
@@ -42,6 +43,7 @@ export default class SortableList extends Component {
   static defaultProps = {
     sortingEnabled: true,
     scrollEnabled: true,
+    keyboardShouldPersistTaps: 'never',
     autoscrollAreaSize: 60,
     manuallyActivateRows: false,
     showsVerticalScrollIndicator: true,
@@ -111,21 +113,13 @@ export default class SortableList extends Component {
         });
       });
 
-      if (Object.keys(nextData).length > Object.keys(data).length) {
-        this.setState({
-          animated: false,
-          data: nextData,
-          containerLayout: null,
-          rowsLayouts: null,
-          order: nextOrder
-        });
-      } else {
-        this.setState({
-          data: nextData,
-          order: nextOrder
-        });
-      }
-
+      this.setState({
+        animated: false,
+        data: nextData,
+        containerLayout: null,
+        rowsLayouts: null,
+        order: nextOrder
+      });
     } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
       this.setState({order: nextOrder});
     }
@@ -192,7 +186,7 @@ export default class SortableList extends Component {
   }
 
   render() {
-    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator} = this.props;
+    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator, keyboardShouldPersistTaps} = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
     innerContainerStyle = [
@@ -217,6 +211,7 @@ export default class SortableList extends Component {
           contentContainerStyle={contentContainerStyle}
           scrollEventThrottle={2}
           scrollEnabled={scrollEnabled}
+          keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
           onScroll={this._onScroll}>

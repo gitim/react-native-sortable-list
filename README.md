@@ -35,6 +35,11 @@ npm i react-native-sortable-list --save
 - **showsHorizontalScrollIndicator** (boolean) when false, the horizontal scroll indicator will not be visible. The default value is true.
 - **sortingEnabled?** (boolean) when false, rows are not sortable. The default value is true.
 - **scrollEnabled?** (boolean) when false, the content does not scrollable. The default value is true.
+- **keyboardShouldPersistTaps** (string)<br />
+Determines when the keyboard should stay visible after a tap.
+  - 'never' (the default), tapping outside of the focused text input when the keyboard is up dismisses the keyboard. When this happens, children won't receive the tap.
+  - 'always', the keyboard will not dismiss automatically, and the scroll view will not catch taps, but children of the scroll view can catch taps.
+  - 'handled', the keyboard will not dismiss automatically when the tap was handled by a children, (or captured by an ancestor.<br/>
 - **manuallyActivateRows?** (bool) whether you intend to use the `toggleRowActive` method to activate a row or use the out of box solution.
 - **autoscrollAreaSize?** (number) determines the height for vertical list and the width for horizontal list of the area at the begining and the end of the list that will trigger autoscrolling. Defaults to 60.<br />
 - **rowActivationTime?** (number) determines time delay in ms before pressed row becomes active. Defaults to 200 ms.<br />
