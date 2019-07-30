@@ -49,6 +49,9 @@ export default class SortableList extends Component {
     manuallyActivateRows: false,
     showsVerticalScrollIndicator: true,
     showsHorizontalScrollIndicator: true,
+    scrollEventThrottle: 2,
+    decelerationRate: 'normal',
+    pagingEnabled: false,
     onScroll: () => {}
   }
 
@@ -199,7 +202,18 @@ export default class SortableList extends Component {
   }
 
   render() {
-    let {contentContainerStyle, innerContainerStyle, horizontal, style, showsVerticalScrollIndicator, showsHorizontalScrollIndicator, snapToAlignment} = this.props;
+    let {
+      contentContainerStyle, 
+      innerContainerStyle, 
+      horizontal, 
+      style, 
+      showsVerticalScrollIndicator, 
+      showsHorizontalScrollIndicator, 
+      snapToAlignment,
+      scrollEventThrottle,
+      decelerationRate,
+      pagingEnabled,
+    } = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
     innerContainerStyle = [
@@ -222,7 +236,9 @@ export default class SortableList extends Component {
           ref={this._onRefScrollView}
           horizontal={horizontal}
           contentContainerStyle={contentContainerStyle}
-          scrollEventThrottle={2}
+          scrollEventThrottle={scrollEventThrottle}
+          pagingEnabled={pagingEnabled}
+          decelerationRate={decelerationRate}
           scrollEnabled={scrollEnabled}
           showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
