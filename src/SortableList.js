@@ -30,6 +30,9 @@ export default class SortableList extends Component {
     snapToAlignment: PropTypes.string,
     rowActivationTime: PropTypes.number,
     manuallyActivateRows: PropTypes.bool,
+    scrollEventThrottle: PropTypes.number,
+    decelerationRate: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
+    pagingEnabled: PropTypes.bool,
 
     renderRow: PropTypes.func.isRequired,
     renderHeader: PropTypes.func,
