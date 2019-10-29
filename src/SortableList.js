@@ -340,7 +340,9 @@ export default class SortableList extends Component {
             contentWidth,
           }, () => {
             this.setState({animated: true}, () => {
-              this.props.onLayout();
+              if (this.props.onLayout) {
+                this.props.onLayout();
+              }
             });
           });
         });
