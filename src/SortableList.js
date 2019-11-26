@@ -33,6 +33,8 @@ export default class SortableList extends Component {
     scrollEventThrottle: PropTypes.number,
     decelerationRate: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
     pagingEnabled: PropTypes.bool,
+    nestedScrollEnabled: PropTypes.bool,
+    disableIntervalMomentum: PropTypes.bool,
 
     renderRow: PropTypes.func.isRequired,
     renderHeader: PropTypes.func,
@@ -216,6 +218,8 @@ export default class SortableList extends Component {
       scrollEventThrottle,
       decelerationRate,
       pagingEnabled,
+      nestedScrollEnabled,
+      disableIntervalMomentum,
     } = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
@@ -235,6 +239,8 @@ export default class SortableList extends Component {
     return (
       <View style={containerStyle} ref={this._onRefContainer}>
         <ScrollView
+          nestedScrollEnabled={nestedScrollEnabled}
+          disableIntervalMomentum={disableIntervalMomentum}
           refreshControl={refreshControl}
           ref={this._onRefScrollView}
           horizontal={horizontal}
