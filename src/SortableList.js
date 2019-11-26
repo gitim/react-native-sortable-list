@@ -30,6 +30,7 @@ export default class SortableList extends Component {
     snapToAlignment: PropTypes.string,
     rowActivationTime: PropTypes.number,
     manuallyActivateRows: PropTypes.bool,
+    keyboardShouldPersistTaps: PropTypes.oneOf(['never', 'always', 'handled']),
     scrollEventThrottle: PropTypes.number,
     decelerationRate: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
     pagingEnabled: PropTypes.bool,
@@ -49,6 +50,7 @@ export default class SortableList extends Component {
   static defaultProps = {
     sortingEnabled: true,
     scrollEnabled: true,
+    keyboardShouldPersistTaps: 'never',
     autoscrollAreaSize: 60,
     snapToAlignment: 'start',
     manuallyActivateRows: false,
@@ -220,6 +222,7 @@ export default class SortableList extends Component {
       pagingEnabled,
       nestedScrollEnabled,
       disableIntervalMomentum,
+      keyboardShouldPersistTaps,
     } = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
@@ -249,6 +252,7 @@ export default class SortableList extends Component {
           pagingEnabled={pagingEnabled}
           decelerationRate={decelerationRate}
           scrollEnabled={scrollEnabled}
+          keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
           snapToAlignment={snapToAlignment}
