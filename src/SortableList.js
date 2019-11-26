@@ -27,9 +27,15 @@ export default class SortableList extends Component {
     showsHorizontalScrollIndicator: PropTypes.bool,
     refreshControl: PropTypes.element,
     autoscrollAreaSize: PropTypes.number,
+    snapToAlignment: PropTypes.string,
     rowActivationTime: PropTypes.number,
     manuallyActivateRows: PropTypes.bool,
     keyboardShouldPersistTaps: PropTypes.oneOf(['never', 'always', 'handled']),
+    scrollEventThrottle: PropTypes.number,
+    decelerationRate: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
+    pagingEnabled: PropTypes.bool,
+    nestedScrollEnabled: PropTypes.bool,
+    disableIntervalMomentum: PropTypes.bool,
 
     renderRow: PropTypes.func.isRequired,
     renderHeader: PropTypes.func,
@@ -38,6 +44,7 @@ export default class SortableList extends Component {
     onChangeOrder: PropTypes.func,
     onActivateRow: PropTypes.func,
     onReleaseRow: PropTypes.func,
+    onScroll: PropTypes.func,
   };
 
   static defaultProps = {
@@ -45,9 +52,14 @@ export default class SortableList extends Component {
     scrollEnabled: true,
     keyboardShouldPersistTaps: 'never',
     autoscrollAreaSize: 60,
+    snapToAlignment: 'start',
     manuallyActivateRows: false,
     showsVerticalScrollIndicator: true,
-    showsHorizontalScrollIndicator: true
+    showsHorizontalScrollIndicator: true,
+    scrollEventThrottle: 2,
+    decelerationRate: 'normal',
+    pagingEnabled: false,
+    onScroll: () => {}
   }
 
   /**
@@ -134,11 +146,14 @@ export default class SortableList extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const {data} = this.state;
+    const {data, scrollEnabled} = this.state;
     const {data: prevData} = prevState;
 
     if (data && prevData && !shallowEqual(data, prevData)) {
       this._onUpdateLayouts();
+    }
+    if (prevProps.scrollEnabled !== scrollEnabled) {
+      this.setState({scrollEnabled: prevProps.scrollEnabled})
     }
   }
 
@@ -195,13 +210,19 @@ export default class SortableList extends Component {
 
   render() {
     let {
-      contentContainerStyle,
-      innerContainerStyle,
-      horizontal,
-      style,
-      showsVerticalScrollIndicator,
-      showsHorizontalScrollIndicator,
-      keyboardShouldPersistTaps
+      contentContainerStyle, 
+      innerContainerStyle, 
+      horizontal, 
+      style, 
+      showsVerticalScrollIndicator, 
+      showsHorizontalScrollIndicator, 
+      snapToAlignment,
+      scrollEventThrottle,
+      decelerationRate,
+      pagingEnabled,
+      nestedScrollEnabled,
+      disableIntervalMomentum,
+      keyboardShouldPersistTaps,
     } = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
@@ -221,16 +242,22 @@ export default class SortableList extends Component {
     return (
       <View style={containerStyle} ref={this._onRefContainer}>
         <ScrollView
+          nestedScrollEnabled={nestedScrollEnabled}
+          disableIntervalMomentum={disableIntervalMomentum}
           refreshControl={refreshControl}
           ref={this._onRefScrollView}
           horizontal={horizontal}
           contentContainerStyle={contentContainerStyle}
-          scrollEventThrottle={2}
+          scrollEventThrottle={scrollEventThrottle}
+          pagingEnabled={pagingEnabled}
+          decelerationRate={decelerationRate}
           scrollEnabled={scrollEnabled}
           keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-          onScroll={this._onScroll}>
+          snapToAlignment={snapToAlignment}
+          onScroll={this._onScroll}
+        >
           {this._renderHeader()}
           <View style={innerContainerStyle}>
             {this._renderRows()}
@@ -632,8 +659,9 @@ export default class SortableList extends Component {
     }
   };
 
-  _onScroll = ({nativeEvent: {contentOffset}}) => {
-      this._contentOffset = contentOffset;
+  _onScroll = (e) => {
+      this._contentOffset = e.nativeEvent.contentOffset;
+      this.props.onScroll(e)
   };
 
   _onRefContainer = (component) => {
