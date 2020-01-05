@@ -297,6 +297,8 @@ export default class SortableList extends Component {
         style[ZINDEX] = 100;
       }
 
+      const isDisabled = !sortingEnabled || data[key].sortDisabled;
+
       return (
         <Row
           key={uniqueRowKey(key)}
@@ -304,7 +306,7 @@ export default class SortableList extends Component {
           horizontal={horizontal}
           activationTime={rowActivationTime}
           animated={animated && !active}
-          disabled={!sortingEnabled}
+          disabled={isDisabled}
           style={style}
           location={location}
           onLayout={!rowsLayouts ? this._onLayoutRow.bind(this, key) : null}
@@ -316,7 +318,7 @@ export default class SortableList extends Component {
           {renderRow({
             key,
             data: data[key],
-            disabled: !sortingEnabled,
+            disabled: isDisabled,
             active,
             index,
           })}
