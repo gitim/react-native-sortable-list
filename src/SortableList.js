@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {ScrollView, View, StyleSheet, Platform, RefreshControl, ViewPropTypes} from 'react-native';
-import {shallowEqual, swapArrayElements} from './utils';
+import {inRange, shallowEqual, swapArrayElements} from './utils';
 import Row from './Row';
 
 const AUTOSCROLL_INTERVAL = 100;
@@ -272,7 +272,6 @@ export default class SortableList extends Component {
     const {horizontal, rowActivationTime, sortingEnabled, renderRow} = this.props;
     const {animated, order, data, activeRowKey, releasedRowKey, rowsLayouts} = this.state;
 
-
     let nextX = 0;
     let nextY = 0;
 
@@ -354,11 +353,13 @@ export default class SortableList extends Component {
   }
 
   _onUpdateLayouts() {
+    const {horizontal} = this.props;
+    const {order} = this.state;
     Promise.all([this._headerLayout, this._footerLayout, ...Object.values(this._rowsLayouts)])
       .then(([headerLayout, footerLayout, ...rowsLayouts]) => {
         // Can get correct container’s layout only after rows’s layouts.
         this._container.measure((x, y, width, height, pageX, pageY) => {
-          const rowsLayoutsByKey = {};
+          let rowsLayoutsByKey = {};
           let contentHeight = 0;
           let contentWidth = 0;
 
@@ -367,10 +368,12 @@ export default class SortableList extends Component {
             contentHeight += layout.height;
             contentWidth += layout.width;
           });
+          rowsLayoutsByKey = this._getRowsLocations(rowsLayoutsByKey, order);
 
           this.setState({
             containerLayout: {x, y, width, height, pageX, pageY},
             rowsLayouts: rowsLayoutsByKey,
+            rowsSwapRanges: this._getRowsSwapRanges(rowsLayoutsByKey, order),
             headerLayout,
             footerLayout,
             contentHeight,
@@ -382,6 +385,54 @@ export default class SortableList extends Component {
       });
   }
 
+  _getRowsLocations(_rowsLayouts, order) {
+    const {horizontal} = this.props;
+    const rowsLayouts = {};
+    let nextX = 0;
+    let nextY = 0;
+
+    for (let i = 0, len = order.length; i < len; i++) {
+      const rowKey = order[i];
+      const rowLayout = _rowsLayouts[rowKey];
+
+      rowsLayouts[rowKey] = {
+        ...rowLayout,
+        x: nextX,
+        y: nextY,
+      };
+
+      if (horizontal) {
+        nextX += rowLayout.width;
+      } else {
+        nextY += rowLayout.height;
+      }
+    }
+
+    return rowsLayouts;
+  }
+
+  _getRowsSwapRanges(rowsLayouts, order) {
+    const {horizontal} = this.props;
+    const rowsSwapRanges = {};
+
+    for (let i = 0, len = order.length; i < len; i++) {
+      const rowKey = order[i];
+      const rowLayout = rowsLayouts[rowKey];
+
+      rowsSwapRanges[rowKey] = horizontal
+        ? {
+          left: [rowLayout.x + rowLayout.width / 3, rowLayout.x + rowLayout.width],
+          right: [rowLayout.x, rowLayout.x + 2 * rowLayout.width / 3],
+        }
+        : {
+          top: [rowLayout.y + rowLayout.height / 3, rowLayout.y + rowLayout.height],
+          bottom: [rowLayout.y, rowLayout.y + 2 * rowLayout.height / 3],
+        };
+    }
+
+    return rowsSwapRanges;
+  }
+
   _scroll(animated) {
     this._scrollView.scrollTo({...this._contentOffset, animated});
   }
@@ -391,7 +442,8 @@ export default class SortableList extends Component {
    * swaps them, else shifts rows.
    */
   _setOrderOnMove() {
-    const {activeRowKey, activeRowIndex, order} = this.state;
+    const {activeRowKey, activeRowIndex, order, rowsLayouts} = this.state;
+    const {horizontal} = this.props;
 
     if (activeRowKey === null || this._autoScrollInterval) {
       return;
@@ -421,9 +473,14 @@ export default class SortableList extends Component {
         nextOrder.splice(rowUnderActiveIndex, 0, activeRowKey);
       }
 
+      const nextRowsLayouts = this._getRowsLocations(rowsLayouts, nextOrder);
+      const nextRowsSwapRanges = this._getRowsSwapRanges(nextRowsLayouts, nextOrder);
+
       this.setState({
         order: nextOrder,
         activeRowIndex: rowUnderActiveIndex,
+        rowsLayouts: nextRowsLayouts,
+        rowsSwapRanges: nextRowsSwapRanges,
       }, () => {
         if (this.props.onChangeOrder) {
           this.props.onChangeOrder(nextOrder);
@@ -433,53 +490,114 @@ export default class SortableList extends Component {
   }
 
   /**
-   * Finds a row, which was covered with the moving row’s half.
+   * Finds a row, which was covered with the moving row’s third.
    */
   _findRowUnderActiveRow() {
     const {horizontal} = this.props;
-    const {rowsLayouts, activeRowKey, activeRowIndex, order} = this.state;
-    const movingRowLayout = rowsLayouts[activeRowKey];
-    const rowLeftX = this._activeRowLocation.x
-    const rowRightX = rowLeftX + movingRowLayout.width;
-    const rowTopY = this._activeRowLocation.y;
-    const rowBottomY = rowTopY + movingRowLayout.height;
+    const {rowsLayouts, rowsSwapRanges, activeRowKey, activeRowIndex, order} = this.state;
+    const movingDirection = this._movingDirection;
+    const rowsCount = order.length;
+    const activeRowLayout = rowsLayouts[activeRowKey];
+    const activeRowLeftX = this._activeRowLocation.x
+    const activeRowRightX = this._activeRowLocation.x + activeRowLayout.width;
+    const activeRowTopY = this._activeRowLocation.y;
+    const activeRowBottomY = this._activeRowLocation.y + activeRowLayout.height;
 
-    for (
-      let currentRowIndex = 0, x = 0, y = 0, rowsCount = order.length;
-      currentRowIndex < rowsCount - 1;
-      currentRowIndex++
+    const prevRowIndex = activeRowIndex - 1;
+    const prevRowKey = order[prevRowIndex];
+    const prevRowSwapRages = rowsSwapRanges[prevRowKey]
+    const nextRowIndex = activeRowIndex + 1;
+    const nextRowKey = order[nextRowIndex];
+    const nextRowSwapRages = rowsSwapRanges[nextRowKey]
+
+    if (horizontal
+      ? (movingDirection === 1
+        ? (
+          (activeRowIndex === 0 || activeRowLeftX > prevRowSwapRages.right[0]) &&
+          (activeRowIndex === rowsCount - 1 || activeRowRightX < nextRowSwapRages.left[0])
+        )
+        : (
+          (activeRowIndex === 0 || activeRowLeftX > prevRowSwapRages.right[1]) &&
+          (activeRowIndex === rowsCount - 1 || activeRowRightX < nextRowSwapRages.left[1])
+        )
+      )
+      : (movingDirection === 1
+        ? (
+          (activeRowIndex === 0 || activeRowTopY > prevRowSwapRages.bottom[0]) &&
+          (activeRowIndex === rowsCount - 1 || activeRowBottomY < nextRowSwapRages.top[0])
+        )
+        : (
+          (activeRowIndex === 0 || activeRowTopY > prevRowSwapRages.bottom[1]) &&
+          (activeRowIndex === rowsCount - 1 || activeRowBottomY < nextRowSwapRages.top[1])
+        )
+      )
     ) {
-      const currentRowKey = order[currentRowIndex];
-      const currentRowLayout = rowsLayouts[currentRowKey];
-      const nextRowIndex = currentRowIndex + 1;
-      const nextRowLayout = rowsLayouts[order[nextRowIndex]];
+      return {
+        rowKey: activeRowKey,
+        rowIndex: activeRowIndex,
+      };
+    }
 
-      x += currentRowLayout.width;
-      y += currentRowLayout.height;
-
-      if (currentRowKey !== activeRowKey && (
-        horizontal
-          ? ((x - currentRowLayout.width <= rowLeftX || currentRowIndex === 0) && rowLeftX <= x - currentRowLayout.width / 3)
-          : ((y - currentRowLayout.height <= rowTopY || currentRowIndex === 0) && rowTopY <= y - currentRowLayout.height / 3)
-      )) {
-        return {
-          rowKey: order[currentRowIndex],
-          rowIndex: currentRowIndex,
+    if (movingDirection === 1) {
+      if (horizontal
+        ? inRange(activeRowRightX, ...nextRowSwapRages.left)
+        : inRange(activeRowBottomY, ...nextRowSwapRages.top)
+      ) {
+         return {
+          rowKey: nextRowKey,
+          rowIndex: nextRowIndex,
         };
       }
-
+    } else {
       if (horizontal
-        ? (x + nextRowLayout.width / 3 <= rowRightX && (rowRightX <= x + nextRowLayout.width || nextRowIndex === rowsCount - 1))
-        : (y + nextRowLayout.height / 3 <= rowBottomY && (rowBottomY <= y + nextRowLayout.height || nextRowIndex === rowsCount - 1))
+        ? inRange(activeRowLeftX, ...prevRowSwapRages.right)
+        : inRange(activeRowTopY, ...prevRowSwapRages.bottom)
       ) {
-        return {
-          rowKey: order[nextRowIndex],
-          rowIndex: nextRowIndex,
+         return {
+          rowKey: prevRowKey,
+          rowIndex: prevRowIndex,
         };
       }
     }
 
-    return {rowKey: activeRowKey, rowIndex: activeRowIndex};
+//     let startIndex = 0;
+//     let endIndex = rowsCount - 1;
+//     let middleIndex;
+// let it = 0
+// console.log(movingDirection);
+//     while (startIndex < endIndex) {
+//       middleIndex = Math.floor((endIndex - startIndex) / 2);
+
+//       if (it++ > 10) {
+//         console.log(startIndex, middleIndex, endIndex);
+//         break
+//       }
+//       const middleRowSwapRanges = rowsSwapRanges[middleIndex];
+
+//       if (horizontal) {
+//         if (movingDirection === 1) {
+//           if (inRange(activeRowRightX, ...middleRowSwapRanges.left)) break;
+//           else if (activeRowRightX < middleRowSwapRanges.left[0]) endIndex = middleIndex;
+//           else if (activeRowRightX > middleRowSwapRanges.left[1]) startIndex = middleIndex;
+//         } else {
+//           if (inRange(activeRowLeftX, ...middleRowSwapRanges.right)) break;
+//           else if (activeRowLeftX < middleRowSwapRanges.right[0]) endIndex = middleIndex;
+//           else if (activeRowLeftX > middleRowSwapRanges.right[1]) startIndex = middleIndex;
+//         }
+//       } else {
+//         if (movingDirection === 1) {
+//           if (inRange(activeRowBottomY, ...middleRowSwapRanges.top)) break;
+//           else if (activeRowBottomY < middleRowSwapRanges.top[0]) endIndex = middleIndex;
+//           else if (activeRowBottomY > middleRowSwapRanges.top[1]) startIndex = middleIndex;
+//         } else {
+//           if (inRange(activeRowTopY, ...middleRowSwapRanges.bottom)) break;
+//           else if (activeRowTopY < middleRowSwapRanges.bottom[0]) endIndex = middleIndex;
+//           else if (activeRowTopY > middleRowSwapRanges.bottom[1]) startIndex = middleIndex;
+//         }
+//       }
+//     }
+
+//     return {rowKey: order[middleIndex], rowIndex: middleIndex};
   }
 
   _scrollOnMove(e) {
@@ -647,9 +765,11 @@ export default class SortableList extends Component {
     const prevMovingDirection = this._movingDirection;
 
     this._activeRowLocation = location;
-    this._movingDirection = this.props.horizontal
-      ? prevMovingRowX < this._activeRowLocation.x
-      : prevMovingRowY < this._activeRowLocation.y;
+    this._movingDirection = (
+      this.props.horizontal
+      ? prevMovingRowX <= this._activeRowLocation.x
+      : prevMovingRowY <= this._activeRowLocation.y
+    ) ? 1 : -1;
 
     this._movingDirectionChanged = prevMovingDirection !== this._movingDirection;
     this._setOrderOnMove();
