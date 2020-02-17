@@ -20,6 +20,7 @@ npm i react-native-sortable-list --save
 
 ### Examples
 - [Basic](https://github.com/gitim/react-native-sortable-list/tree/master/examples/Basic)
+- [ItemDisabled](https://github.com/gitim/react-native-sortable-list/tree/master/examples/ItemDisabled)
 - [Horizontal](https://github.com/gitim/react-native-sortable-list/tree/master/examples/Horizontal)
 
 
