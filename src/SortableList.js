@@ -283,10 +283,14 @@ export default class SortableList extends Component {
       if (rowsLayouts) {
         if (horizontal) {
           location.x = nextX;
-          nextX += rowsLayouts[key] ? rowsLayouts[key].width : 0;
+
+          let width = item.width != null ? item.width : 0;
+          nextX += (width === 0 && rowsLayouts[key]) ? rowsLayouts[key].width : width;
         } else {
           location.y = nextY;
-          nextY += rowsLayouts[key] ? rowsLayouts[key].height : 0;
+
+          let height = item.height != null ? item.height : 0;
+          nextY += (height === 0 && rowsLayouts[key]) ? rowsLayouts[key].height : height;
         }
       }
 
