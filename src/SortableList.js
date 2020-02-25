@@ -636,17 +636,21 @@ export default class SortableList extends Component {
 
   _onReleaseRow = (rowKey) => {
     this._stopAutoScroll();
-    this.setState(({activeRowKey}) => ({
-      activeRowKey: null,
-      activeRowIndex: null,
-      releasedRowKey: activeRowKey,
-      scrollEnabled: this.props.scrollEnabled,
-    }));
-
-    if (this.props.onReleaseRow) {
-      this.props.onReleaseRow(rowKey, this.state.order);
-    }
-  };
+    this.setState(({ activeRowKey, activeRowIndex, order }) => {
+      if (this.props.onReleaseRow) {
+        this.props.onReleaseRow(rowKey, activeRowIndex);
+      }
+      if (this.props.onChangeOrderFinished) {
+        this.props.onChangeOrderFinished(order)
+      }
+      return ({
+        activeRowKey: null,
+        activeRowIndex: null,
+        releasedRowKey: activeRowKey,
+        scrollEnabled: this.props.scrollEnabled,
+      })
+    });
+  }
 
   _onMoveRow = (e, gestureState, location) => {
     const prevMovingRowX = this._activeRowLocation.x;
