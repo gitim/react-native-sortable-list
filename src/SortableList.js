@@ -307,7 +307,7 @@ export default class SortableList extends Component {
           disabled={!sortingEnabled}
           style={style}
           location={location}
-          onLayout={!rowsLayouts ? this._onLayoutRow.bind(this, key) : null}
+          onLayout={this._onLayoutRow.bind(this, key)}
           onActivate={this._onActivateRow.bind(this, key, index)}
           onPress={this._onPressRow.bind(this, key)}
           onRelease={this._onReleaseRow.bind(this, key)}
