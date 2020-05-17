@@ -371,6 +371,8 @@ export default class SortableList extends Component {
 	}
 
 	_onUpdateLayouts() {
+		const { innerContainerStyle } = this.props;
+
 		Promise.all([
 			this._headerLayout,
 			this._footerLayout,
@@ -381,6 +383,20 @@ export default class SortableList extends Component {
 				const rowsLayoutsByKey = {};
 				let contentHeight = 0;
 				let contentWidth = 0;
+
+				// verify for padding bottom in containerContentStyle
+				if (innerContainerStyle) {
+					const flattenStyle = StyleSheet.flatten(innerContainerStyle);
+					const paddingBottom = flattenStyle.paddingBottom;
+					const intPadding =
+						typeof paddingBottom === 'string'
+							? parseFloat(paddingBottom)
+							: paddingBottom;
+
+					if (Number.isFinite(intPadding)) {
+						contentHeight += intPadding;
+					}
+				}
 
 				rowsLayouts.forEach(({ rowKey, layout }) => {
 					rowsLayoutsByKey[rowKey] = layout;
@@ -580,6 +596,7 @@ export default class SortableList extends Component {
 						contentHeight,
 						contentWidth,
 						containerLayout,
+						headerLayout = { height: 0 },
 						footerLayout = { height: 0 },
 					} = this.state;
 
@@ -588,7 +605,10 @@ export default class SortableList extends Component {
 					} else {
 						return (
 							this._contentOffset.y <
-							contentHeight + footerLayout.height - containerLayout.height
+							contentHeight +
+								footerLayout.height +
+								headerLayout.height -
+								containerLayout.height
 						);
 					}
 				},
@@ -598,6 +618,7 @@ export default class SortableList extends Component {
 						contentHeight,
 						contentWidth,
 						containerLayout,
+						headerLayout = { height: 0 },
 						footerLayout = { height: 0 },
 					} = this.state;
 
@@ -608,7 +629,10 @@ export default class SortableList extends Component {
 							: nextStep;
 					} else {
 						const scrollHeight =
-							contentHeight + footerLayout.height - containerLayout.height;
+							contentHeight +
+							footerLayout.height +
+							headerLayout.height -
+							containerLayout.height;
 
 						return this._contentOffset.y + nextStep > scrollHeight
 							? scrollHeight - this._contentOffset.y
