@@ -6,7 +6,7 @@ import {
 	StyleSheet,
 	Platform,
 	RefreshControl,
-	ViewPropTypes
+	ViewPropTypes,
 } from 'react-native';
 import { shallowEqual, swapArrayElements } from './utils';
 import Row from './Row';
@@ -51,7 +51,7 @@ export default class SortableList extends Component {
 		onChangeOrder: PropTypes.func,
 		onActivateRow: PropTypes.func,
 		onReleaseRow: PropTypes.func,
-		onScroll: PropTypes.func
+		onScroll: PropTypes.func,
 	};
 
 	static defaultProps = {
@@ -66,7 +66,7 @@ export default class SortableList extends Component {
 		scrollEventThrottle: 2,
 		decelerationRate: 'normal',
 		pagingEnabled: false,
-		onScroll: () => {}
+		onScroll: () => {},
 	};
 
 	/**
@@ -92,7 +92,7 @@ export default class SortableList extends Component {
 		activeRowIndex: null,
 		releasedRowKey: null,
 		sortingEnabled: this.props.sortingEnabled,
-		scrollEnabled: this.props.scrollEnabled
+		scrollEnabled: this.props.scrollEnabled,
 	};
 
 	componentWillMount() {
@@ -138,12 +138,12 @@ export default class SortableList extends Component {
 					data: nextData,
 					containerLayout: null,
 					rowsLayouts: null,
-					order: nextOrder
+					order: nextOrder,
 				});
 			} else {
 				this.setState({
 					data: nextData,
-					order: nextOrder
+					order: nextOrder,
 				});
 			}
 		} else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
@@ -152,14 +152,11 @@ export default class SortableList extends Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		const { data, scrollEnabled } = this.state;
+		const { data } = this.state;
 		const { data: prevData } = prevState;
 
 		if (data && prevData && !shallowEqual(data, prevData)) {
 			this._onUpdateLayouts();
-		}
-		if (prevProps.scrollEnabled !== scrollEnabled) {
-			this.setState({ scrollEnabled: prevProps.scrollEnabled });
 		}
 	}
 
@@ -230,23 +227,23 @@ export default class SortableList extends Component {
 			pagingEnabled,
 			nestedScrollEnabled,
 			disableIntervalMomentum,
-			keyboardShouldPersistTaps
+			keyboardShouldPersistTaps,
 		} = this.props;
 		const { animated, contentHeight, contentWidth, scrollEnabled } = this.state;
 		const containerStyle = StyleSheet.flatten([
 			style,
-			{ opacity: Number(animated) }
+			{ opacity: Number(animated) },
 		]);
 		innerContainerStyle = [
 			styles.rowsContainer,
 			horizontal ? { width: contentWidth } : { height: contentHeight },
-			innerContainerStyle
+			innerContainerStyle,
 		];
 		let { refreshControl } = this.props;
 
 		if (refreshControl && refreshControl.type === RefreshControl) {
 			refreshControl = React.cloneElement(this.props.refreshControl, {
-				enabled: scrollEnabled // fix for Android
+				enabled: scrollEnabled, // fix for Android
 			});
 		}
 
@@ -282,7 +279,7 @@ export default class SortableList extends Component {
 			horizontal,
 			rowActivationTime,
 			sortingEnabled,
-			renderRow
+			renderRow,
 		} = this.props;
 		const {
 			animated,
@@ -290,7 +287,7 @@ export default class SortableList extends Component {
 			data,
 			activeRowKey,
 			releasedRowKey,
-			rowsLayouts
+			rowsLayouts,
 		} = this.state;
 
 		let nextX = 0;
@@ -338,7 +335,7 @@ export default class SortableList extends Component {
 						data: data[key],
 						disabled: !sortingEnabled,
 						active,
-						index
+						index,
 					})}
 				</Row>
 			);
@@ -377,7 +374,7 @@ export default class SortableList extends Component {
 		Promise.all([
 			this._headerLayout,
 			this._footerLayout,
-			...Object.values(this._rowsLayouts)
+			...Object.values(this._rowsLayouts),
 		]).then(([headerLayout, footerLayout, ...rowsLayouts]) => {
 			// Can get correct container’s layout only after rows’s layouts.
 			this._container.measure((x, y, width, height, pageX, pageY) => {
@@ -398,7 +395,7 @@ export default class SortableList extends Component {
 						headerLayout,
 						footerLayout,
 						contentHeight,
-						contentWidth
+						contentWidth,
 					},
 					() => {
 						this.setState({ animated: true });
@@ -425,7 +422,7 @@ export default class SortableList extends Component {
 
 		let {
 			rowKey: rowUnderActiveKey,
-			rowIndex: rowUnderActiveIndex
+			rowIndex: rowUnderActiveIndex,
 		} = this._findRowUnderActiveRow();
 
 		if (this._movingDirectionChanged) {
@@ -457,7 +454,7 @@ export default class SortableList extends Component {
 			this.setState(
 				{
 					order: nextOrder,
-					activeRowIndex: rowUnderActiveIndex
+					activeRowIndex: rowUnderActiveIndex,
 				},
 				() => {
 					if (this.props.onChangeOrder) {
@@ -503,7 +500,7 @@ export default class SortableList extends Component {
 			) {
 				return {
 					rowKey: order[currentRowIndex],
-					rowIndex: currentRowIndex
+					rowIndex: currentRowIndex,
 				};
 			}
 
@@ -518,7 +515,7 @@ export default class SortableList extends Component {
 			) {
 				return {
 					rowKey: order[nextRowIndex],
-					rowIndex: nextRowIndex
+					rowIndex: nextRowIndex,
 				};
 			}
 		}
@@ -573,7 +570,7 @@ export default class SortableList extends Component {
 					const contentOffset = this._contentOffset[horizontal ? 'x' : 'y'];
 
 					return contentOffset - nextStep < 0 ? contentOffset : nextStep;
-				}
+				},
 			});
 		} else if (inAutoScrollEndArea) {
 			this._startAutoScroll({
@@ -583,7 +580,7 @@ export default class SortableList extends Component {
 						contentHeight,
 						contentWidth,
 						containerLayout,
-						footerLayout = { height: 0 }
+						footerLayout = { height: 0 },
 					} = this.state;
 
 					if (horizontal) {
@@ -601,7 +598,7 @@ export default class SortableList extends Component {
 						contentHeight,
 						contentWidth,
 						containerLayout,
-						footerLayout = { height: 0 }
+						footerLayout = { height: 0 },
 					} = this.state;
 
 					if (horizontal) {
@@ -617,7 +614,7 @@ export default class SortableList extends Component {
 							? scrollHeight - this._contentOffset.y
 							: nextStep;
 					}
-				}
+				},
 			});
 		}
 	}
@@ -638,7 +635,7 @@ export default class SortableList extends Component {
 		this._autoScrollInterval = setInterval(() => {
 			if (shouldScroll()) {
 				const movement = {
-					[horizontal ? 'dx' : 'dy']: direction * getScrollStep(counter++)
+					[horizontal ? 'dx' : 'dy']: direction * getScrollStep(counter++),
 				};
 
 				this.scrollBy(movement);
@@ -673,7 +670,7 @@ export default class SortableList extends Component {
 			activeRowKey: rowKey,
 			activeRowIndex: index,
 			releasedRowKey: null,
-			scrollEnabled: false
+			scrollEnabled: false,
 		});
 
 		if (this.props.onActivateRow) {
@@ -693,7 +690,7 @@ export default class SortableList extends Component {
 			activeRowKey: null,
 			activeRowIndex: null,
 			releasedRowKey: activeRowKey,
-			scrollEnabled: this.props.scrollEnabled
+			scrollEnabled: this.props.scrollEnabled,
 		}));
 
 		if (this.props.onReleaseRow) {
@@ -740,11 +737,11 @@ export default class SortableList extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1
+		flex: 1,
 	},
 
 	rowsContainer: {
 		flex: 1,
-		zIndex: 1
-	}
+		zIndex: 1,
+	},
 });
