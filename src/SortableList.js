@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {ScrollView, View, StyleSheet, Platform, RefreshControl, ViewPropTypes} from 'react-native';
 import {shallowEqual, swapArrayElements} from './utils';
-import Row from './row';
+import Row from './Row';
 
 const AUTOSCROLL_INTERVAL = 100;
 const ZINDEX = Platform.OS === 'ios' ? 'zIndex' : 'elevation';
