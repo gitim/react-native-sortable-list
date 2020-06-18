@@ -45,6 +45,8 @@ export default class SortableList extends Component {
     onActivateRow: PropTypes.func,
     onReleaseRow: PropTypes.func,
     onScroll: PropTypes.func,
+
+    rowIsDisabled: PropTypes.func,
   };
 
   static defaultProps = {
@@ -289,6 +291,14 @@ export default class SortableList extends Component {
 
       const active = activeRowKey === key;
       const released = releasedRowKey === key;
+      const disabled = this.props.rowIsDisabled
+        ? this.props.rowIsDisabled({
+            key,
+            data: data[key],
+            active,
+            index,
+          })
+        : !sortingEnabled;
 
       if (active || released) {
         style[ZINDEX] = 100;
@@ -301,7 +311,7 @@ export default class SortableList extends Component {
           horizontal={horizontal}
           activationTime={rowActivationTime}
           animated={animated && !active}
-          disabled={!sortingEnabled}
+          disabled={disabled}
           style={style}
           location={location}
           onLayout={!rowsLayouts ? this._onLayoutRow.bind(this, key) : null}
@@ -313,7 +323,7 @@ export default class SortableList extends Component {
           {renderRow({
             key,
             data: data[key],
-            disabled: !sortingEnabled,
+            disabled,
             active,
             index,
           })}
