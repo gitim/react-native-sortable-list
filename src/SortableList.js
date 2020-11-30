@@ -117,13 +117,16 @@ export default class SortableList extends Component {
 
     if (data && nextData && !shallowEqual(data, nextData)) {
       nextOrder = nextOrder || Object.keys(nextData)
-      uniqueRowKey.id++;
       this._rowsLayouts = {};
       nextOrder.forEach((key) => {
         this._rowsLayouts[key] = new Promise((resolve) => {
           this._resolveRowLayout[key] = resolve;
         });
       });
+
+      if (Object.keys(nextData).length >= Object.keys(data).length) {
+        uniqueRowKey.id++;
+      }
 
       if (Object.keys(nextData).length > Object.keys(data).length) {
         this.setState({
