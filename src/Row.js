@@ -1,12 +1,6 @@
 import React, { Component, cloneElement } from 'react';
 import PropTypes from 'prop-types';
-import {
-	Animated,
-	PanResponder,
-	StyleSheet,
-	ViewPropTypes,
-	Platform
-} from 'react-native';
+import { Animated, PanResponder, StyleSheet, Platform } from 'react-native';
 import { shallowEqual } from './utils';
 
 const isWeb = Platform.OS === 'web';
@@ -17,10 +11,9 @@ export default class Row extends Component {
 		animated: PropTypes.bool,
 		disabled: PropTypes.bool,
 		horizontal: PropTypes.bool,
-		style: ViewPropTypes.style,
 		location: PropTypes.shape({
 			x: PropTypes.number,
-			y: PropTypes.number
+			y: PropTypes.number,
 		}),
 		manuallyActivateRows: PropTypes.bool,
 		activationTime: PropTypes.number,
@@ -34,12 +27,12 @@ export default class Row extends Component {
 		onMove: PropTypes.func,
 
 		// Will be called, when user release the view.
-		onRelease: PropTypes.func
+		onRelease: PropTypes.func,
 	};
 
 	static defaultProps = {
 		location: { x: 0, y: 0 },
-		activationTime: 200
+		activationTime: 200,
 	};
 
 	constructor(props) {
@@ -77,7 +70,7 @@ export default class Row extends Component {
 			this._prevGestureState = {
 				...gestureState,
 				moveX: gestureState.x0,
-				moveY: gestureState.y0
+				moveY: gestureState.y0,
 			};
 
 			if (this.props.manuallyActivateRows) return;
@@ -149,7 +142,7 @@ export default class Row extends Component {
 					this._relocate(this.props.location);
 				}
 			}
-		}
+		},
 	});
 
 	componentWillReceiveProps(nextProps) {
@@ -170,7 +163,7 @@ export default class Row extends Component {
 	moveBy({ dx = 0, dy = 0, animated = false }) {
 		this._nextLocation = {
 			x: this._location.x + dx,
-			y: this._location.y + dy
+			y: this._location.y + dy,
 		};
 		this._relocate(this._nextLocation, animated);
 	}
@@ -181,7 +174,7 @@ export default class Row extends Component {
 			style,
 			styles.container,
 			this._animatedLocation.getLayout(),
-			horizontal ? styles.horizontalContainer : styles.verticalContainer
+			horizontal ? styles.horizontalContainer : styles.verticalContainer,
 		];
 
 		return (
@@ -191,7 +184,7 @@ export default class Row extends Component {
 				onLayout={this._onLayout}>
 				{this.props.manuallyActivateRows && children
 					? cloneElement(children, {
-							toggleRowActive: this._toggleActive
+							toggleRowActive: this._toggleActive,
 					  })
 					: children}
 			</Animated.View>
@@ -209,7 +202,7 @@ export default class Row extends Component {
 			this._isAnimationRunning = true;
 			Animated.timing(this._animatedLocation, {
 				toValue: nextLocation,
-				duration: 300
+				duration: 300,
 			}).start(() => {
 				this._isAnimationRunning = false;
 			});
@@ -265,14 +258,14 @@ export default class Row extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		position: 'absolute'
+		position: 'absolute',
 	},
 	horizontalContainer: {
 		top: 0,
-		bottom: 0
+		bottom: 0,
 	},
 	verticalContainer: {
 		left: 0,
-		right: 0
-	}
+		right: 0,
+	},
 });
