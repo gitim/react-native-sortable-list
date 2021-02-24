@@ -32,7 +32,7 @@ export default class SortableList extends Component {
     manuallyActivateRows: PropTypes.bool,
     keyboardShouldPersistTaps: PropTypes.oneOf(['never', 'always', 'handled']),
     scrollEventThrottle: PropTypes.number,
-    decelerationRate: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
+    decelerationRate: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     pagingEnabled: PropTypes.bool,
     nestedScrollEnabled: PropTypes.bool,
     disableIntervalMomentum: PropTypes.bool,
@@ -81,6 +81,7 @@ export default class SortableList extends Component {
     rowsLayouts: null,
     containerLayout: null,
     data: this.props.data,
+    isMounting: true,
     activeRowKey: null,
     activeRowIndex: null,
     releasedRowKey: null,
@@ -88,7 +89,7 @@ export default class SortableList extends Component {
     scrollEnabled: this.props.scrollEnabled
   };
 
-  componentWillMount() {
+  componentDidMount() {
     this.state.order.forEach((key) => {
       this._rowsLayouts[key] = new Promise((resolve) => {
         this._resolveRowLayout[key] = resolve;
@@ -105,17 +106,18 @@ export default class SortableList extends Component {
         this._resolveFooterLayout = resolve;
       });
     }
-  }
 
-  componentDidMount() {
     this._onUpdateLayouts();
+
+    this.setState({ isMounting: false });
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {data, order} = this.state;
-    let {data: nextData, order: nextOrder} = nextProps;
+  componentDidUpdate(prevProps, prevState) {
+    const {data: currentData, order: currentOrder, scrollEnabled} = this.state;
+    const {data: prevData} = prevState;
+    let {data: nextData, order: nextOrder} = this.props;
 
-    if (data && nextData && !shallowEqual(data, nextData)) {
+    if (currentData && nextData && !shallowEqual(currentData, nextData)) {
       nextOrder = nextOrder || Object.keys(nextData)
       uniqueRowKey.id++;
       this._rowsLayouts = {};
@@ -125,7 +127,7 @@ export default class SortableList extends Component {
         });
       });
 
-      if (Object.keys(nextData).length > Object.keys(data).length) {
+      if (Object.keys(nextData).length > Object.keys(currentData).length) {
         this.setState({
           animated: false,
           data: nextData,
@@ -140,20 +142,12 @@ export default class SortableList extends Component {
         });
       }
 
-    } else if (order && nextOrder && !shallowEqual(order, nextOrder)) {
+    } else if (currentOrder && nextOrder && !shallowEqual(currentOrder, nextOrder)) {
       this.setState({order: nextOrder});
     }
-  }
 
-  componentDidUpdate(prevProps, prevState) {
-    const {data, scrollEnabled} = this.state;
-    const {data: prevData} = prevState;
-
-    if (data && prevData && !shallowEqual(data, prevData)) {
+    if (currentData && prevData && !shallowEqual(currentData, prevData)) {
       this._onUpdateLayouts();
-    }
-    if (prevProps.scrollEnabled !== scrollEnabled) {
-      this.setState({scrollEnabled: prevProps.scrollEnabled})
     }
   }
 
@@ -209,13 +203,15 @@ export default class SortableList extends Component {
   }
 
   render() {
+    if (this.state.isMounting ) return null;
+
     let {
-      contentContainerStyle, 
-      innerContainerStyle, 
-      horizontal, 
-      style, 
-      showsVerticalScrollIndicator, 
-      showsHorizontalScrollIndicator, 
+      contentContainerStyle,
+      innerContainerStyle,
+      horizontal,
+      style,
+      showsVerticalScrollIndicator,
+      showsHorizontalScrollIndicator,
       snapToAlignment,
       scrollEventThrottle,
       decelerationRate,
