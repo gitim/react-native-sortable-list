@@ -121,12 +121,12 @@ class Row extends Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.active !== nextProps.active) {
+  componentDidUpdate(prevProps) {
+    if (this.props.active !== prevProps.active) {
       Animated.timing(this._active, {
         duration: 300,
         easing: Easing.bounce,
-        toValue: Number(nextProps.active),
+        toValue: Number(this.props.active),
       }).start();
     }
   }
