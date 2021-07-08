@@ -224,6 +224,7 @@ export default class SortableList extends Component {
 			nestedScrollEnabled,
 			disableIntervalMomentum,
 			keyboardShouldPersistTaps,
+			bounces,
 		} = this.props;
 		const { animated, contentHeight, contentWidth, scrollEnabled } = this.state;
 		const containerStyle = StyleSheet.flatten([
@@ -246,6 +247,7 @@ export default class SortableList extends Component {
 		return (
 			<View style={containerStyle} ref={this._onRefContainer}>
 				<ScrollView
+					bounces={bounces}
 					nestedScrollEnabled={nestedScrollEnabled}
 					disableIntervalMomentum={disableIntervalMomentum}
 					refreshControl={refreshControl}
@@ -271,20 +273,10 @@ export default class SortableList extends Component {
 	}
 
 	_renderRows() {
-		const {
-			horizontal,
-			rowActivationTime,
-			sortingEnabled,
-			renderRow,
-		} = this.props;
-		const {
-			animated,
-			order,
-			data,
-			activeRowKey,
-			releasedRowKey,
-			rowsLayouts,
-		} = this.state;
+		const { horizontal, rowActivationTime, sortingEnabled, renderRow } =
+			this.props;
+		const { animated, order, data, activeRowKey, releasedRowKey, rowsLayouts } =
+			this.state;
 
 		let nextX = 0;
 		let nextY = 0;
@@ -432,10 +424,8 @@ export default class SortableList extends Component {
 			return;
 		}
 
-		let {
-			rowKey: rowUnderActiveKey,
-			rowIndex: rowUnderActiveIndex,
-		} = this._findRowUnderActiveRow();
+		let { rowKey: rowUnderActiveKey, rowIndex: rowUnderActiveIndex } =
+			this._findRowUnderActiveRow();
 
 		if (this._movingDirectionChanged) {
 			this._prevSwapedRowKey = null;
