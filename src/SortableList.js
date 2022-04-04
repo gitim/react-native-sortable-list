@@ -219,6 +219,7 @@ export default class SortableList extends Component {
       nestedScrollEnabled,
       disableIntervalMomentum,
       keyboardShouldPersistTaps,
+      ...scrollViewProps
     } = this.props;
     const {animated, contentHeight, contentWidth, scrollEnabled} = this.state;
     const containerStyle = StyleSheet.flatten([style, {opacity: Number(animated)}])
@@ -238,6 +239,7 @@ export default class SortableList extends Component {
     return (
       <View style={containerStyle} ref={this._onRefContainer}>
         <ScrollView
+          {...scrollViewProps}
           nestedScrollEnabled={nestedScrollEnabled}
           disableIntervalMomentum={disableIntervalMomentum}
           refreshControl={refreshControl}
@@ -265,7 +267,7 @@ export default class SortableList extends Component {
   }
 
   _renderRows() {
-    const {horizontal, rowActivationTime, sortingEnabled, renderRow} = this.props;
+    const {horizontal, rowActivationTime, sortingEnabled, renderRow, rowProps} = this.props;
     const {animated, order, data, activeRowKey, releasedRowKey, rowsLayouts} = this.state;
 
 
@@ -295,6 +297,7 @@ export default class SortableList extends Component {
 
       return (
         <Row
+          {...rowProps}
           key={uniqueRowKey(key)}
           ref={this._onRefRow.bind(this, key)}
           horizontal={horizontal}
@@ -590,8 +593,12 @@ export default class SortableList extends Component {
     this._autoScrollInterval = null;
   }
 
-  _onLayoutRow(rowKey, {nativeEvent: {layout}}) {
+  _onLayoutRow(rowKey, e) {
+    const {nativeEvent: {layout}} = e;
     this._resolveRowLayout[rowKey]({rowKey, layout});
+    if (this.props.onLayoutRow) {
+      this.props.onLayoutRow(rowKey, e)
+    }
   }
 
   _onLayoutHeader = ({nativeEvent: {layout}}) => {
@@ -625,17 +632,21 @@ export default class SortableList extends Component {
 
   _onReleaseRow = (rowKey) => {
     this._stopAutoScroll();
-    this.setState(({activeRowKey}) => ({
-      activeRowKey: null,
-      activeRowIndex: null,
-      releasedRowKey: activeRowKey,
-      scrollEnabled: this.props.scrollEnabled,
-    }));
-
-    if (this.props.onReleaseRow) {
-      this.props.onReleaseRow(rowKey, this.state.order);
-    }
-  };
+    this.setState(({ activeRowKey, activeRowIndex, order }) => {
+      if (this.props.onReleaseRow) {
+        this.props.onReleaseRow(rowKey, activeRowIndex);
+      }
+      if (this.props.onChangeOrderFinished) {
+        this.props.onChangeOrderFinished(order)
+      }
+      return ({
+        activeRowKey: null,
+        activeRowIndex: null,
+        releasedRowKey: activeRowKey,
+        scrollEnabled: this.props.scrollEnabled,
+      })
+    });
+  }
 
   _onMoveRow = (e, gestureState, location) => {
     const prevMovingRowX = this._activeRowLocation.x;
