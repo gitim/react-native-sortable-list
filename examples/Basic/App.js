@@ -1,24 +1,24 @@
 /**
  * Sample React Native App
- * httpss://github.com/facebook/react-native
- * @flow
+ * https://github.com/facebook/react-native
+ *
+ * @format
  */
 
-import React, { Component } from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {
   Animated,
-  Easing,
+  Image,
   StyleSheet,
   Text,
-  Image,
+  Platform,
+  Easing,
   View,
   Dimensions,
-  Platform,
 } from 'react-native';
 import SortableList from 'react-native-sortable-list';
 
 const window = Dimensions.get('window');
-
 
 const data = {
   0: {
@@ -63,87 +63,80 @@ const data = {
   },
 };
 
-export default class Basic extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>React Native Sortable List</Text>
-        <SortableList
-          style={styles.list}
-          contentContainerStyle={styles.contentContainer}
-          data={data}
-          renderRow={this._renderRow} />
-      </View>
-    );
-  }
+function Row(props) {
+  const {active, data} = props;
 
-  _renderRow = ({data, active}) => {
-    return <Row data={data} active={active} />
-  }
-}
-
-class Row extends Component {
-
-  constructor(props) {
-    super(props);
-
-    this._active = new Animated.Value(0);
-
-    this._style = {
+  const activeAnim = useRef(new Animated.Value(0));
+  const style = useMemo(
+    () => ({
       ...Platform.select({
         ios: {
-          transform: [{
-            scale: this._active.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 1.1],
-            }),
-          }],
-          shadowRadius: this._active.interpolate({
+          transform: [
+            {
+              scale: activeAnim.current.interpolate({
+                inputRange: [0, 1],
+                outputRange: [1, 1.07],
+              }),
+            },
+          ],
+          shadowRadius: activeAnim.current.interpolate({
             inputRange: [0, 1],
             outputRange: [2, 10],
           }),
         },
 
         android: {
-          transform: [{
-            scale: this._active.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 1.07],
-            }),
-          }],
-          elevation: this._active.interpolate({
+          transform: [
+            {
+              scale: activeAnim.current.interpolate({
+                inputRange: [0, 1],
+                outputRange: [1, 1.07],
+              }),
+            },
+          ],
+          elevation: activeAnim.current.interpolate({
             inputRange: [0, 1],
             outputRange: [2, 6],
           }),
         },
-      })
-    };
-  }
+      }),
+    }),
+    [],
+  );
+  useEffect(() => {
+    Animated.timing(activeAnim.current, {
+      duration: 300,
+      easing: Easing.bounce,
+      toValue: Number(active),
+      useNativeDriver: true,
+    }).start();
+  }, [active]);
 
-  componentDidUpdate(prevProps) {
-    if (this.props.active !== prevProps.active) {
-      Animated.timing(this._active, {
-        duration: 300,
-        easing: Easing.bounce,
-        toValue: Number(this.props.active),
-      }).start();
-    }
-  }
-
-  render() {
-   const {data, active} = this.props;
-
-    return (
-      <Animated.View style={[
-        styles.row,
-        this._style,
-      ]}>
-        <Image source={{uri: data.image}} style={styles.image} />
-        <Text style={styles.text}>{data.text}</Text>
-      </Animated.View>
-    );
-  }
+  return (
+    <Animated.View style={[styles.row, style]}>
+      <Image source={{uri: data.image}} style={[styles.image]} />
+      <Text style={styles.text}>{data.text}</Text>
+    </Animated.View>
+  );
 }
+
+const App = () => {
+  const renderRow = useCallback(({data, active}) => {
+    return <Row data={data} active={active} />;
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>React Native Sortable List</Text>
+      <SortableList
+        style={styles.list}
+        contentContainerStyle={styles.contentContainer}
+        data={data}
+        renderRow={renderRow}
+      />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -151,38 +144,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#eee',
-
     ...Platform.select({
       ios: {
         paddingTop: 20,
       },
     }),
   },
-
   title: {
     fontSize: 20,
     paddingVertical: 20,
     color: '#999999',
   },
-
   list: {
     flex: 1,
   },
-
   contentContainer: {
     width: window.width,
-
     ...Platform.select({
       ios: {
         paddingHorizontal: 30,
       },
-
       android: {
         paddingHorizontal: 0,
-      }
-    })
+      },
+    }),
   },
-
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -193,8 +179,6 @@ const styles = StyleSheet.create({
     marginTop: 7,
     marginBottom: 12,
     borderRadius: 4,
-
-
     ...Platform.select({
       ios: {
         width: window.width - 30 * 2,
@@ -203,24 +187,23 @@ const styles = StyleSheet.create({
         shadowOffset: {height: 2, width: 2},
         shadowRadius: 2,
       },
-
       android: {
         width: window.width - 30 * 2,
         elevation: 0,
         marginHorizontal: 30,
       },
-    })
+    }),
   },
-
   image: {
     width: 50,
     height: 50,
     marginRight: 30,
     borderRadius: 25,
   },
-
   text: {
     fontSize: 24,
     color: '#222222',
   },
 });
+
+export default App;

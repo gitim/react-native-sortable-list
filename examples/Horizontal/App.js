@@ -1,10 +1,11 @@
 /**
  * Sample React Native App
- * httpss://github.com/facebook/react-native
- * @flow
+ * https://github.com/facebook/react-native
+ *
+ * @format
  */
 
-import React, { Component } from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {
   Animated,
   Easing,
@@ -18,7 +19,6 @@ import {
 import SortableList from 'react-native-sortable-list';
 
 const window = Dimensions.get('window');
-
 
 const data = {
   0: {
@@ -63,87 +63,80 @@ const data = {
   },
 };
 
-export default class Horizontal extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>React Native Sortable List</Text>
-        <SortableList
-          horizontal
-          style={styles.list}
-          contentContainerStyle={styles.contentContainer}
-          data={data}
-          renderRow={this._renderRow} />
-      </View>
-    );
-  }
+export default function Horizontal() {
+  const renderRow = useCallback(({data, active}) => {
+    return <Row data={data} active={active} />;
+  }, []);
 
-  _renderRow = ({data, active}) => {
-    return <Row data={data} active={active} />
-  }
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>React Native Sortable List</Text>
+      <SortableList
+        horizontal
+        style={styles.list}
+        contentContainerStyle={styles.contentContainer}
+        data={data}
+        renderRow={renderRow}
+      />
+    </View>
+  );
 }
 
-class Row extends Component {
+function Row(props) {
+  const {active, data} = props;
 
-  constructor(props) {
-    super(props);
-
-    this._active = new Animated.Value(0);
-
-    this._style = {
+  const activeAnim = useRef(new Animated.Value(0));
+  const style = useMemo(
+    () => ({
       ...Platform.select({
         ios: {
-          transform: [{
-            scale: this._active.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 1.1],
-            }),
-          }],
-          shadowRadius: this._active.interpolate({
+          transform: [
+            {
+              scale: activeAnim.current.interpolate({
+                inputRange: [0, 1],
+                outputRange: [1, 1.1],
+              }),
+            },
+          ],
+          shadowRadius: activeAnim.current.interpolate({
             inputRange: [0, 1],
             outputRange: [2, 10],
           }),
         },
 
         android: {
-          transform: [{
-            scale: this._active.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 1.07],
-            }),
-          }],
-          elevation: this._active.interpolate({
+          transform: [
+            {
+              scale: activeAnim.current.interpolate({
+                inputRange: [0, 1],
+                outputRange: [1, 1.07],
+              }),
+            },
+          ],
+          elevation: activeAnim.current.interpolate({
             inputRange: [0, 1],
             outputRange: [2, 6],
           }),
         },
-      })
-    };
-  }
+      }),
+    }),
+    [],
+  );
+  useEffect(() => {
+    Animated.timing(activeAnim.current, {
+      duration: 300,
+      easing: Easing.bounce,
+      toValue: Number(active),
+      useNativeDriver: true,
+    }).start();
+  }, [active]);
 
-  componentDidUpdate(prevProps) {
-    if (this.props.active !== prevProps.active) {
-      Animated.timing(this._active, {
-        duration: 300,
-        easing: Easing.bounce,
-        toValue: Number(this.props.active),
-      }).start();
-    }
-  }
-
-  render() {
-   const {data, active} = this.props;
-
-    return (
-      <Animated.View style={[
-        styles.row,
-        this._style,
-      ]}>
-        <Image source={{uri: data.image}} style={styles.image} />
-        <Text style={styles.text}>{data.text}</Text>
-      </Animated.View>
-    );
-  }
+  return (
+    <Animated.View style={[styles.row, style]}>
+      <Image source={{uri: data.image}} style={styles.image} />
+      <Text style={styles.text}>{data.text}</Text>
+    </Animated.View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -179,8 +172,8 @@ const styles = StyleSheet.create({
 
       android: {
         paddingVertical: 0,
-      }
-    })
+      },
+    }),
   },
 
   row: {
@@ -192,7 +185,6 @@ const styles = StyleSheet.create({
     height: 150,
     marginHorizontal: 10,
     borderRadius: 4,
-
 
     ...Platform.select({
       ios: {
@@ -206,7 +198,7 @@ const styles = StyleSheet.create({
         elevation: 0,
         marginHorizontal: 30,
       },
-    })
+    }),
   },
 
   image: {
