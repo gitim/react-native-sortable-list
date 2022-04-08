@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {ScrollView, View, StyleSheet, Platform, RefreshControl, ViewPropTypes} from 'react-native';
+import {ScrollView, View, StyleSheet, Platform, RefreshControl} from 'react-native';
 import {shallowEqual, swapArrayElements} from './utils';
 import Row from './Row';
 
@@ -13,13 +13,17 @@ function uniqueRowKey(key) {
 
 uniqueRowKey.id = 0
 
+// react-native seems to sometimes represent stylesheet entries as numbers, and sometimes as objects.
+// See: https://stackoverflow.com/questions/41483862/how-are-styles-mapped-to-numbers-in-react-native
+const STYLE_TYPE = PropTypes.oneOfType([PropTypes.number, PropTypes.object])
+
 export default class SortableList extends Component {
   static propTypes = {
     data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
     order: PropTypes.arrayOf(PropTypes.any),
-    style: ViewPropTypes.style,
-    contentContainerStyle: ViewPropTypes.style,
-    innerContainerStyle: ViewPropTypes.style,
+    style: STYLE_TYPE,
+    contentContainerStyle: STYLE_TYPE,
+    innerContainerStyle: STYLE_TYPE,
     sortingEnabled: PropTypes.bool,
     scrollEnabled: PropTypes.bool,
     horizontal: PropTypes.bool,
