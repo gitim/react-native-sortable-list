@@ -25,7 +25,7 @@ npm i react-native-sortable-list --save
 
 ### API
 #### Props
-- **data** (Object) data source
+- **data** (Object|Item[]) data source
 - **order?** (Array) an array of keys from data, the order of keys from the array will be used to initial rows order
 - **style?** (Object, Array)
 - **contentContainerStyle?** (Object, Array) these styles will be applied to the inner scroll view content container
@@ -66,6 +66,11 @@ Called when the active row was released. Returns the key and the new list order.
 - **onPressRow?** (function)<br />
 `(key) => void`<br />
 Called when a row was pressed.
+
+#### Item
+These are the optional values you can send in the single object of a data source that would modify the way `react-native-sortable-list` would interact with it.
+- **height?** (Number) height of the item. overrides calculations
+- **width?** (Number) width of the item. overrides calculations
 
 #### Methods
 - **scrollBy(dy?, animated?)** scrolls by a given y offset, either immediately or with a smooth animation
