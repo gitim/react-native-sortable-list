@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, createElement} from 'react';
 import PropTypes from 'prop-types';
 import {ScrollView, View, StyleSheet, Platform, RefreshControl} from 'react-native';
 import {shallowEqual, swapArrayElements} from './utils';
@@ -313,7 +313,7 @@ export default class SortableList extends Component {
           onRelease={this._onReleaseRow.bind(this, key)}
           onMove={this._onMoveRow}
           manuallyActivateRows={this.props.manuallyActivateRows}>
-          {renderRow({
+          {createElement(renderRow, {
             key,
             data: data[key],
             disabled: !sortingEnabled,
