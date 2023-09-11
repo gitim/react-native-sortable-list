@@ -167,13 +167,7 @@ export default class SortableList extends Component {
 	}
 
 	scrollTo({ x = 0, y = 0, animated = false }) {
-		if (this.props.horizontal) {
-			this._contentOffset.x = x;
-		} else {
-			this._contentOffset.y = y;
-		}
-
-		this._scroll(animated);
+		this._scrollView.scrollTo({ x, y }, animated);
 	}
 
 	scrollToRowKey({ key, animated = false }) {
@@ -263,7 +257,8 @@ export default class SortableList extends Component {
 					showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
 					showsVerticalScrollIndicator={showsVerticalScrollIndicator}
 					snapToAlignment={snapToAlignment}
-					onScroll={this._onScroll}>
+					onScroll={this._onScroll}
+				>
 					{this._renderHeader()}
 					<View style={innerContainerStyle}>{this._renderRows()}</View>
 					{this._renderFooter()}
@@ -317,7 +312,8 @@ export default class SortableList extends Component {
 					onPress={this._onPressRow.bind(this, key)}
 					onRelease={this._onReleaseRow.bind(this, key)}
 					onMove={this._onMoveRow}
-					manuallyActivateRows={this.props.manuallyActivateRows}>
+					manuallyActivateRows={this.props.manuallyActivateRows}
+				>
 					{renderRow({
 						key,
 						data: data[key],
